@@ -371,7 +371,18 @@
             await loadAllData();
         }
 
-        // Xuất dữ liệu BXH theo cấu trúc 3 Đoàn (Đoàn 1, Đoàn 2, Đoàn 3) phân tách riêng biệt
+        // THÊM MỚI: Hàm gửi yêu cầu xóa dòng dữ liệu lỗi lên API Backend
+        async function deleteBXH(type, ten) {
+            if(!confirm(`Em có chắc chắn muốn xóa dữ liệu của [${ten}] khỏi Bảng Vàng không?`)) return;
+            await fetch('/api/delete-bxh', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ loai: type, ten })
+            });
+            await loadAllData();
+        }
+
+        // FIXED: Xuất dữ liệu BXH theo cấu trúc 3 Đoàn và tích hợp thêm nút Xóa
         function renderBXH(type, bxhList) {
             const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
             if(!container) return;
@@ -383,17 +394,20 @@
                 let rows = playersInDoan.map((p, idx) => `
                     <tr>
                         <td><strong>TOP ${idx+1}</strong></td>
-                        <td class="text-pink">${p.ten}</td>
+                        <td class="text-pink"><strong>${p.ten}</strong></td>
                         <td><code>${p.idGame}</code></td>
                         <td class="text-blue">${p.monPhai}</td>
                         <td class="text-gold">${(p.dameNguoi || 0).toLocaleString()}</td>
                         <td>${(p.dameTru || 0).toLocaleString()}</td>
                         <td style="color:#22c55e; font-weight:bold;">${p.mang || 0}</td>
+                        <td>
+                            <button class="btn-action-del" style="padding: 2px 8px; font-size: 11px;" onclick="deleteBXH('${type}', '${p.ten}')">Xóa</button>
+                        </td>
                     </tr>
                 `).join('');
 
                 if(playersInDoan.length === 0) {
-                    rows = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding: 10px;">Chưa có dữ liệu thông số của đoàn này.</td></tr>`;
+                    rows = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding: 10px;">Chưa có dữ liệu thông số của đoàn này.</td></tr>`;
                 }
 
                 return `
@@ -401,7 +415,7 @@
                         <div class="doan-title-head">${doanName.toUpperCase()}</div>
                         <table>
                             <thead>
-                                <tr><th>Hạng</th><th>Tên</th><th>ID</th><th>Phái</th><th>Dame Người</th><th>Dame Trụ</th><th>Mạng</th></tr>
+                                <tr><th>Hạng</th><th>Tên</th><th>ID</th><th>Phái</th><th>Dame Người</th><th>Dame Trụ</th><th>Mạng</th><th>Hành động</th></tr>
                             </thead>
                             <tbody>${rows}</tbody>
                         </table>

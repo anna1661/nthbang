@@ -97,19 +97,17 @@ app.post('/api/save-team-excel', (req, res) => {
     }
 });
 
-// FIXED: Lưu hoặc cập nhật thành tích điểm số vào Bảng Vàng (BXH)
+// Lưu hoặc cập nhật thành tích điểm số vào Bảng Vàng (BXH)
 app.post('/api/save-bxh', (req, res) => {
     try {
         const { loai, record } = req.body; 
         
-        // Kiểm tra điều kiện chặn crash hệ thống
         if (!record || !record.ten) {
             return res.status(400).json({ success: false, error: "Thiếu thông tin tên người chơi!" });
         }
 
         const targetBXH = loai === 'bangchien' ? bxhBangChien : bxhScrim;
         
-        // Ép kiểu dữ liệu chuẩn xác để không bị lỗi cộng chuỗi chữ
         const formattedRecord = {
             ten: record.ten.trim(),
             idGame: record.idGame || "0000",
@@ -120,18 +118,35 @@ app.post('/api/save-bxh', (req, res) => {
             mang: parseInt(record.mang) || 0
         };
         
-        // So sánh an toàn không lo trống thuộc tính tên
         const idx = targetBXH.findIndex(p => p.ten && p.ten.trim().toLowerCase() === formattedRecord.ten.toLowerCase());
         
         if (idx !== -1) {
-            targetBXH[idx] = formattedRecord; // Trùng tên cũ thì đè dữ liệu điểm mới lên
+            targetBXH[idx] = formattedRecord; 
         } else {
-            targetBXH.push(formattedRecord);  // Tên mới hoàn toàn thì thêm dòng mới vào bảng
+            targetBXH.push(formattedRecord);  
         }
         
         res.json({ success: true });
     } catch (err) {
         console.error("Lỗi Xử lý lưu Bảng Vàng Backend:", err);
+        res.status(500).json({ success: false });
+    }
+});
+
+// === THÊM MỚI: API XÓA NHÂN VẬT KHỎI BẢNG VÀNG (BXH) ===
+app.post('/api/delete-bxh', (req, res) => {
+    try {
+        const { loai, ten } = req.body;
+        if (!ten) return res.status(400).json({ success: false, error: "Thiếu tên để xóa" });
+
+        if (loai === 'bangchien') {
+            bxhBangChien = bxhBangChien.filter(p => p.ten && p.ten.trim().toLowerCase() !== ten.trim().toLowerCase());
+        } else {
+            bxhScrim = bxhScrim.filter(p => p.ten && p.ten.trim().toLowerCase() !== ten.trim().toLowerCase());
+        }
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Lỗi xóa dòng Bảng Vàng:", err);
         res.status(500).json({ success: false });
     }
 });
