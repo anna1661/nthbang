@@ -3,7 +3,6 @@ const path = require('path');
 const app = express();
 
 // --- CẤU HÌNH CỔNG LINH HOẠT CHO RENDER ---
-// Sử dụng cổng do Render cấp tự động, nếu chạy ở máy cá nhân sẽ tự dùng cổng 3000
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -50,48 +49,91 @@ app.get('/api/all-data', (req, res) => {
 
 // Xử lý đăng ký danh sách tham gia
 app.post('/api/register', (req, res) => {
-    const { loai, ten, idGame, monPhai, khuVuc } = req.body;
-    const targetList = loai === 'bangchien' ? dsThamGiaBangChien : dsThamGiaScrim;
-    
-    // Nếu trùng tên thì cập nhật thông tin, chưa trùng thì push mới
-    const idx = targetList.findIndex(p => p.ten.toLowerCase() === ten.toLowerCase());
-    if (idx !== -1) {
-        targetList[idx] = { ten, idGame, monPhai, khuVuc };
-    } else {
-        targetList.push({ ten, idGame, monPhai, khuVuc });
+    try {
+        const { loai, ten, idGame, monPhai, khuVuc } = req.body;
+        if (!ten) return res.status(400).json({ success: false, error: "Tên không được trống" });
+
+        const targetList = loai === 'bangchien' ? dsThamGiaBangChien : dsThamGiaScrim;
+        
+        const idx = targetList.findIndex(p => p.ten && p.ten.toLowerCase() === ten.toLowerCase());
+        if (idx !== -1) {
+            targetList[idx] = { ten, idGame, monPhai, khuVuc };
+        } else {
+            targetList.push({ ten, idGame, monPhai, khuVuc });
+        }
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Lỗi Đăng ký quân số:", err);
+        res.status(500).json({ success: false });
     }
-    res.json({ success: true });
 });
 
 // Xóa khỏi danh sách tham gia
 app.post('/api/delete-player', (req, res) => {
-    const { loai, ten } = req.body;
-    if (loai === 'bangchien') {
-        dsThamGiaBangChien = dsThamGiaBangChien.filter(p => p.ten !== ten);
-    } else {
-        dsThamGiaScrim = dsThamGiaScrim.filter(p => p.ten !== ten);
+    try {
+        const { loai, ten } = req.body;
+        if (loai === 'bangchien') {
+            dsThamGiaBangChien = dsThamGiaBangChien.filter(p => p.ten !== ten);
+        } else {
+            dsThamGiaScrim = dsThamGiaScrim.filter(p => p.ten !== ten);
+        }
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Lỗi Xóa thành viên:", err);
+        res.status(500).json({ success: false });
     }
-    res.json({ success: true });
 });
 
 // Cập nhật sơ đồ đội hình Excel chiến thuật
 app.post('/api/save-team-excel', (req, res) => {
-    const { loai, doiHinh } = req.body;
-    if (loai === 'bangchien') doiHinhBangChien = doiHinh;
-    else doiHinhScrim = doiHinh;
-    res.json({ success: true });
+    try {
+        const { loai, doiHinh } = req.body;
+        if (loai === 'bangchien') doiHinhBangChien = doiHinh;
+        else doiHinhScrim = doiHinh;
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Lỗi Lưu đội hình Excel:", err);
+        res.status(500).json({ success: false });
+    }
 });
 
-// Lưu hoặc cập nhật thành tích điểm số vào BXH
+// FIXED: Lưu hoặc cập nhật thành tích điểm số vào Bảng Vàng (BXH)
 app.post('/api/save-bxh', (req, res) => {
-    const { loai, record } = req.body; // record: {ten, idGame, monPhai, doan, dameNguoi, dameTru, mang}
-    const targetBXH = loai === 'bangchien' ? bxhBangChien : bxhScrim;
-    
-    const idx = targetBXH.findIndex(p => p.ten.toLowerCase() === record.ten.toLowerCase());
-    if (idx !== -1) targetBXH[idx] = record;
-    else targetBXH.push(record);
-    
-    res.json({ success: true });
+    try {
+        const { loai, record } = req.body; 
+        
+        // Kiểm tra điều kiện chặn crash hệ thống
+        if (!record || !record.ten) {
+            return res.status(400).json({ success: false, error: "Thiếu thông tin tên người chơi!" });
+        }
+
+        const targetBXH = loai === 'bangchien' ? bxhBangChien : bxhScrim;
+        
+        // Ép kiểu dữ liệu chuẩn xác để không bị lỗi cộng chuỗi chữ
+        const formattedRecord = {
+            ten: record.ten.trim(),
+            idGame: record.idGame || "0000",
+            monPhai: record.monPhai || "Cửu Linh",
+            doan: record.doan || "Đoàn 1",
+            dameNguoi: parseInt(record.dameNguoi) || 0,
+            dameTru: parseInt(record.dameTru) || 0,
+            mang: parseInt(record.mang) || 0
+        };
+        
+        // So sánh an toàn không lo trống thuộc tính tên
+        const idx = targetBXH.findIndex(p => p.ten && p.ten.trim().toLowerCase() === formattedRecord.ten.toLowerCase());
+        
+        if (idx !== -1) {
+            targetBXH[idx] = formattedRecord; // Trùng tên cũ thì đè dữ liệu điểm mới lên
+        } else {
+            targetBXH.push(formattedRecord);  // Tên mới hoàn toàn thì thêm dòng mới vào bảng
+        }
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Lỗi Xử lý lưu Bảng Vàng Backend:", err);
+        res.status(500).json({ success: false });
+    }
 });
 
 // --- KHỞI CHẠY MÁY CHỦ ---
