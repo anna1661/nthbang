@@ -1,0 +1,12 @@
+{
+  "name": "bang-thanh-vuc",
+  "version": "1.0.0",
+  "description": "Quan ly Bang Thanh Vuc game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
