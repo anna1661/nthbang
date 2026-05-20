@@ -1,7 +1,10 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const PORT = 3000;
+
+// --- CẤU HÌNH CỔNG LINH HOẠT CHO RENDER ---
+// Sử dụng cổng do Render cấp tự động, nếu chạy ở máy cá nhân sẽ tự dùng cổng 3000
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -91,6 +94,7 @@ app.post('/api/save-bxh', (req, res) => {
     res.json({ success: true });
 });
 
+// --- KHỞI CHẠY MÁY CHỦ ---
 app.listen(PORT, () => {
-    console.log(`[HỆ THỐNG] Máy chủ chạy mượt mà tại: http://localhost:${PORT}`);
+    console.log(`[HỆ THỐNG] Máy chủ đang chạy tại cổng: ${PORT}`);
 });
