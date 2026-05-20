@@ -172,10 +172,12 @@
         // Khởi tạo các ô lựa chọn môn phái động dựa theo mảng chuẩn cấu hình
         function initDropdowns() {
             ['bc-phai', 'sc-phai', 'bc-bxh-phai', 'sc-bxh-phai'].forEach(id => {
-                document.getElementById(id).innerHTML = MON_PHAI.map(p => `<option value="${p}">${p}</option>`).join('');
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = MON_PHAI.map(p => `<option value="${p}">${p}</option>`).join('');
             });
             ['bc-team', 'sc-team'].forEach(id => {
-                document.getElementById(id).innerHTML = TEAMS.map(t => `<option value="${t}">${t}</option>`).join('');
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = TEAMS.map(t => `<option value="${t}">${t}</option>`).join('');
             });
         }
 
@@ -198,19 +200,24 @@
 
         // Tải toàn bộ cơ sở dữ liệu thời gian thực từ API node server
         async function loadAllData() {
-            const res = await fetch('/api/all-data');
-            CLIENT_DATA = await res.json();
-            renderRegisterTable('bangchien', CLIENT_DATA.dsThamGiaBangChien);
-            renderRegisterTable('scrim', CLIENT_DATA.dsThamGiaScrim);
-            renderExcelGrid('bangchien', CLIENT_DATA.doiHinhBangChien);
-            renderExcelGrid('scrim', CLIENT_DATA.doiHinhScrim);
-            renderBXH('bangchien', CLIENT_DATA.bxhBangChien);
-            renderBXH('scrim', CLIENT_DATA.bxhScrim);
+            try {
+                const res = await fetch('/api/all-data');
+                CLIENT_DATA = await res.json();
+                renderRegisterTable('bangchien', CLIENT_DATA.dsThamGiaBangChien || []);
+                renderRegisterTable('scrim', CLIENT_DATA.dsThamGiaScrim || []);
+                renderExcelGrid('bangchien', CLIENT_DATA.doiHinhBangChien || {});
+                renderExcelGrid('scrim', CLIENT_DATA.doiHinhScrim || {});
+                renderBXH('bangchien', CLIENT_DATA.bxhBangChien || []);
+                renderBXH('scrim', CLIENT_DATA.bxhScrim || []);
+            } catch (error) {
+                console.error("Lỗi lấy dữ liệu hệ thống:", error);
+            }
         }
 
         // Đổ dữ liệu vào bảng danh sách tổng tham gia chiến trường
         function renderRegisterTable(type, list) {
             const tbody = document.getElementById(`tbl-${type === 'bangchien' ? 'bc' : 'sc'}-ds`);
+            if(!tbody) return;
             tbody.innerHTML = list.map(p => `
                 <tr>
                     <td class="text-pink"><strong>${p.ten}</strong></td>
@@ -239,7 +246,7 @@
             });
             document.getElementById(`${pre}-name`).value = "";
             document.getElementById(`${pre}-id`).value = "";
-            loadAllData();
+            await loadAllData();
         }
 
         async function deletePlayer(type, ten) {
@@ -249,15 +256,15 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ loai: type, ten })
             });
-            loadAllData();
+            await loadAllData();
         }
 
         // Dựng giao diện mô phỏng bảng tính Excel phân chia đội hình chiến thuật
         function renderExcelGrid(type, doiHinh) {
             const container = document.getElementById(`excel-${type === 'bangchien' ? 'bc' : 'sc'}`);
+            if(!container) return;
             container.innerHTML = TEAMS.map(teamName => {
                 const members = doiHinh[teamName] || [];
-                // Cố định tạo 15 ô dòng dữ liệu trống cho chuẩn form Excel chia bảng
                 let rowsHtml = "";
                 for(let i = 0; i < 15; i++) {
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
@@ -286,11 +293,13 @@
             const sourceList = type === 'bangchien' ? CLIENT_DATA.dsThamGiaBangChien : CLIENT_DATA.dsThamGiaScrim;
             let tempDoiHinh = { "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": [] };
             
-            sourceList.forEach(p => {
-                if (tempDoiHinh[p.khuVuc] && tempDoiHinh[p.khuVuc].length < 15) {
-                    tempDoiHinh[p.khuVuc].push({ ten: p.ten, idGame: p.idGame, monPhai: p.monPhai });
-                }
-            });
+            if(sourceList) {
+                sourceList.forEach(p => {
+                    if (tempDoiHinh[p.khuVuc] && tempDoiHinh[p.khuVuc].length < 15) {
+                        tempDoiHinh[p.khuVuc].push({ ten: p.ten, idGame: p.idGame, monPhai: p.monPhai });
+                    }
+                });
+            }
             renderExcelGrid(type, tempDoiHinh);
         }
 
@@ -298,6 +307,7 @@
         async function saveTeamExcel(type) {
             const gridId = `excel-${type === 'bangchien' ? 'bc' : 'sc'}`;
             const container = document.getElementById(gridId);
+            if(!container) return;
             let tempDoiHinh = { "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": [] };
 
             TEAMS.forEach(teamName => {
@@ -324,7 +334,7 @@
                 body: JSON.stringify({ loai: type, doiHinh: tempDoiHinh })
             });
             alert("Đã đồng bộ sơ đồ sắp xếp đội hình Excel thành công!");
-            loadAllData();
+            await loadAllData();
         }
 
         // Xử lý lưu kết quả thông số trận đấu vào Bảng xếp hạng
@@ -348,19 +358,18 @@
                 body: JSON.stringify({ loai: type, record })
             });
             
-            // Clear dữ liệu nhập form
             document.getElementById(`${pre}-bxh-name`).value = "";
             document.getElementById(`${pre}-bxh-id`).value = "";
-            loadAllData();
+            await loadAllData();
         }
 
         // Xuất dữ liệu BXH theo cấu trúc 3 Đoàn (Đoàn 1, Đoàn 2, Đoàn 3) phân tách riêng biệt
         function renderBXH(type, bxhList) {
             const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
+            if(!container) return;
             const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
             
             container.innerHTML = doans.map(doanName => {
-                // Lọc người chơi thuộc đoàn và xếp thứ tự dựa trên tổng lượng Dame Người cao nhất xuống thấp
                 const playersInDoan = bxhList.filter(p => p.doan === doanName).sort((a,b) => b.dameNguoi - a.dameNguoi);
                 
                 let rows = playersInDoan.map((p, idx) => `
@@ -393,10 +402,11 @@
             }).join('');
         }
 
-        window.onload = function() {
+        // Tối ưu hóa quá trình chạy bất đồng bộ khi load trang
+        window.addEventListener('DOMContentLoaded', async () => {
             initDropdowns();
-            loadAllData();
-        };
+            await loadAllData();
+        });
     </script>
 </body>
 </html>
