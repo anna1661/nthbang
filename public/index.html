@@ -173,169 +173,116 @@
     </div>
 </div>
 
-<div id="content-scrim" class="tab-content">
-    <div class="bxh-layout-archive">
-        
-        <div class="glass-card form-bxh admin-only" style="display: none;">
-            <h3>LƯU THÀNH TÍCH TRẬN MỚI (SCRIM)</h3>
-            <div class="form-group">
-                <label>Tên Trận đấu/Giải đấu:</label>
-                <input type="text" id="sc-match-name" placeholder="Ví dụ: Scrim Tối Thứ 5...">
+<div id="main-scrim" class="main-tab-pane">
+    <div class="sub-tab-bar">
+        <button class="sub-btn active" onclick="switchSubTab('sc', 'ds')">1. Danh Sách Tham Gia Scrim</button>
+        <button class="sub-btn" onclick="switchSubTab('sc', 'dh')">2. Xếp Đội Hình Scrim</button>
+        <button class="sub-btn" onclick="switchSubTab('sc', 'bxh')">3. BXH Dame Scrim</button>
+    </div>
+    
+    <div id="sc-ds" class="sub-tab-content active">
+        <div class="grid-layout">
+            <div class="glass-card admin-only" style="display: none;">
+                <h3>ĐĂNG KÝ QUÂN SỐ SCRIM</h3>
+                <div class="form-group">
+                    <label>TÊN NHÂN VẬT</label><input type="text" id="sc-name-reg" class="form-control">
+                    <label>ID GAME</label><input type="text" id="sc-id" class="form-control">
+                    <label>MÔN PHÁI</label><select id="sc-phai" class="form-control"></select>
+                    <label>ĐỘI HÌNH DỰ KIẾN</label><select id="sc-team" class="form-control"></select>
+                    <label>GHI CHÚ</label><input type="text" id="sc-note" class="form-control">
+                    <button class="btn btn-primary" onclick="register('scrim')">Ghi danh đấu tập</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Tên nhân vật:</label>
-                <input type="text" id="sc-name" placeholder="Nhập tên nhân vật...">
+            <div class="glass-card">
+                <h3>DANH SÁCH THÀNH VIÊN THAM GIA SCRIM</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>Tên</th><th>ID</th><th>Phái</th><th>Đội hình</th><th>Ghi chú</th><th class="admin-only">Hành động</th></tr>
+                        </thead>
+                        <tbody id="tbl-sc-ds"></tbody>
+                    </table>
+                </div>
             </div>
-            <div class="form-group">
-                <label>ID Game:</label>
-                <input type="text" id="sc-idGame" placeholder="Nhập ID...">
-            </div>
-            <div class="form-group">
-                <label>Môn Phái:</label>
-                <select id="sc-monPhai">
-                    <option value="Cửu Linh">Cửu Linh</option>
-                    <option value="Thần Tướng">Thần Tướng</option>
-                    <option value="Huyết Hà">Huyết Hà</option>
-                    <option value="Toái Mộng">Toái Mộng</option>
-                    <option value="Thần Cơ">Thần Cơ</option>
-                    <option value="Tố Vấn">Tố Vấn</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Đoàn:</label>
-                <select id="sc-doan">
-                    <option value="Đoàn 1">Đoàn 1</option>
-                    <option value="Đoàn 2">Đoàn 2</option>
-                    <option value="Đoàn 3">Đoàn 3</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Dame Người:</label>
-                <input type="number" id="sc-dameNguoi" value="0">
-            </div>
-            <div class="form-group">
-                <label>Dame Trụ:</label>
-                <input type="number" id="sc-dameTru" value="0">
-            </div>
-            <div class="form-group">
-                <label>Mạng:</label>
-                <input type="number" id="sc-mang" value="0">
-            </div>
-            <button class="btn btn-primary" style="margin-top:10px;" onclick="saveBXH('scrim')">Cập nhật</button>
         </div>
-
-        <div class="bxh-main-content">
-            <div class="glass-card archive-sidebar">
-                <h3>📜 LỊCH SỬ ĐẤU TẬP</h3>
-                <div id="sc-archive-list" class="archive-list-wrapper"></div>
+    </div>
+    
+    <div id="sc-dh" class="sub-tab-content">
+        <div class="excel-control-panel admin-only" style="display: none;">
+            <button class="btn btn-secondary" onclick="autoBuildTeam('scrim')">⚡ Tự động nạp</button>
+            <button class="btn btn-primary" onclick="saveTeamExcel('scrim')">💾 Lưu sơ đồ</button>
+        </div>
+        <div class="excel-grid" id="excel-sc"></div>
+    </div>
+    
+    <div id="sc-bxh" class="sub-tab-content">
+        <div class="bxh-layout-archive">
+            
+            <div class="glass-card form-bxh admin-only" style="display: none;">
+                <h3>NHẬP THÀNH TÍCH MỚI (SCRIM)</h3>
+                <div class="form-group">
+                    <label>Tên Trận đấu/Giải đấu:</label>
+                    <input type="text" id="sc-match-name" class="form-control" placeholder="Tên trận scrim...">
+                </div>
+                <div class="form-group">
+                    <label>Tên nhân vật:</label>
+                    <input type="text" id="sc-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>ID Game</label>
+                    <input type="text" id="sc-idGame" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Môn Phái</label>
+                    <select id="sc-monPhai" class="form-control">
+                        <option value="Cửu Linh">Cửu Linh</option>
+                        <option value="Thần Tướng">Thần Tướng</option>
+                        <option value="Huyết Hà">Huyết Hà</option>
+                        <option value="Toái Mộng">Toái Mộng</option>
+                        <option value="Thần Cơ">Thần Cơ</option>
+                        <option value="Tố Vấn">Tố Vấn</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Đoàn</label>
+                    <select id="sc-doan" class="form-control">
+                        <option value="Đoàn 1">Đoàn 1</option>
+                        <option value="Đoàn 2">Đoàn 2</option>
+                        <option value="Đoàn 3">Đoàn 3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Dame Người</label>
+                    <input type="number" id="sc-dameNguoi" class="form-control" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Dame Trụ</label>
+                    <input type="number" id="sc-dameTru" class="form-control" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Mạng</label>
+                    <input type="number" id="sc-mang" class="form-control" value="0">
+                </div>
+                <button class="btn btn-primary" style="margin-top: 10px;" onclick="saveBXH('scrim')">Cập nhật</button>
             </div>
             
-            <div class="glass-card display-bxh-archive">
-                <h3 id="sc-archive-title">🏆 BẢNG VINH DANH THÀNH TÍCH</h3>
-                <div class="bxh-wrapper" id="bxh-container-sc"></div>
+            <div class="bxh-main-content">
+                <div class="glass-card archive-sidebar">
+                    <h3>📜 LỊCH SỬ ĐẤU TẬP</h3>
+                    <div id="sc-archive-list" class="archive-list-wrapper"></div>
+                </div>
+                <div class="glass-card display-bxh-archive">
+                    <h3 id="sc-archive-title">🏆 BẢNG VINH DANH THÀNH TÍCH</h3>
+                    <div class="bxh-wrapper" id="bxh-container-sc"></div>
+                </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
 
-    <div class="bxh-layout-archive">
-    
-    <div class="glass-card form-bxh admin-only">
-        <h3>LƯU THÀNH TÍCH TRẬN MỚI</h3>
-        <button class="btn btn-primary" onclick="saveBXH('bangchien')">Cập nhật</button>
-    </div>
-
-    <div class="bxh-main-content">
-        <div class="glass-card archive-sidebar">
-            <h3>LỊCH SỬ TRẬN ĐẤU</h3>
-            <div id="bc-archive-list" class="archive-list-wrapper"></div>
-        </div>
-        
-        <div class="glass-card display-bxh-archive">
-            <h3 id="bc-archive-title">BẢNG VINH DANH THÀNH TÍCH</h3>
-            <div class="bxh-wrapper" id="bxh-container-bc"></div>
-        </div>
-    </div>
-
+</main>
 </div>
-                        <div class="glass-card archive-sidebar">
-                            <h3>LỊCH SỬ TRẬN ĐẤU</h3>
-                            <div id="bc-archive-list" class="archive-list-wrapper"></div>
-                        </div>
-                        <div class="glass-card display-bxh-archive">
-                            <h3 id="bc-archive-title">BẢNG VINH DANH THÀNH TÍCH</h3>
-                            <div class="bxh-wrapper" id="bxh-container-bc"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="main-scrim" class="main-tab-pane">
-                <div class="sub-tab-bar">
-                    <button class="sub-btn active" onclick="switchSubTab('sc', 'ds')">1. Danh Sách Tham Gia Scrim</button>
-                    <button class="sub-btn" onclick="switchSubTab('sc', 'dh')">2. Xếp Đội Hình Scrim</button>
-                    <button class="sub-btn" onclick="switchSubTab('sc', 'bxh')">3. BXH Dame Scrim</button>
-                </div>
-                <div id="sc-ds" class="sub-tab-content active">
-                    <div class="grid-layout">
-                        <div class="glass-card admin-only">
-                            <h3>ĐĂNG KÝ QUÂN SỐ SCRIM</h3>
-                            <div class="form-group">
-                                <label>TÊN NHÂN VẬT</label><input type="text" id="sc-name" class="form-control">
-                                <label>ID GAME</label><input type="text" id="sc-id" class="form-control">
-                                <label>MÔN PHÁI</label><select id="sc-phai" class="form-control"></select>
-                                <label>ĐỘI HÌNH DỰ KIẾN</label><select id="sc-team" class="form-control"></select>
-                                <label>GHI CHÚ</label><input type="text" id="sc-note" class="form-control">
-                                <button class="btn btn-primary" onclick="register('scrim')">Ghi danh đấu tập</button>
-                            </div>
-                        </div>
-                        <div class="glass-card">
-                            <h3>DANH SÁCH THÀNH VIÊN THAM GIA SCRIM</h3>
-                            <div class="table-responsive">
-                                <table>
-                                    <thead><tr><th>Tên</th><th>ID</th><th>Phái</th><th>Đội hình</th><th>Ghi chú</th><th class="admin-only">Hành động</th></tr></thead>
-                                    <tbody id="tbl-sc-ds"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="sc-dh" class="sub-tab-content">
-                    <div class="excel-control-panel admin-only">
-                        <button class="btn btn-secondary" onclick="autoBuildTeam('scrim')">⚡ Tự động nạp</button>
-                        <button class="btn btn-primary" onclick="saveTeamExcel('scrim')">💾 Lưu sơ đồ</button>
-                    </div>
-                    <div class="excel-grid" id="excel-sc"></div>
-                </div>
-                <div id="sc-bxh" class="sub-tab-content">
-                    <div class="bxh-layout-archive">
-                        <div class="glass-card form-bxh admin-only">
-                            <h3>NHẬP THÀNH TÍCH MỚI</h3>
-                            <input type="text" id="sc-bxh-matchname" class="form-control" placeholder="Tên trận scrim...">
-                            <label>Tên nhân vật</label><input type="text" id="sc-bxh-name" class="form-control">
-                            <label>ID Game</label><input type="text" id="sc-bxh-id" class="form-control">
-                            <label>Môn Phái</label><select id="sc-bxh-phai" class="form-control"></select>
-                            <label>Đoàn</label><select id="sc-bxh-doan" class="form-control"><option value="Đoàn 1">Đoàn 1</option><option value="Đoàn 2">Đoàn 2</option><option value="Đoàn 3">Đoàn 3</option></select>
-                            <label>Dame Người</label><input type="number" id="sc-bxh-dn" class="form-control" value="0">
-                            <label>Dame Trụ</label><input type="number" id="sc-bxh-dt" class="form-control" value="0">
-                            <label>Mạng</label><input type="number" id="sc-bxh-m" class="form-control" value="0">
-                            <button class="btn btn-primary" onclick="saveBXH('scrim')">Cập nhật</button>
-                        </div>
-                        <div class="glass-card archive-sidebar">
-                            <h3>LỊCH SỬ ĐẤU TẬP</h3>
-                            <div id="sc-archive-list" class="archive-list-wrapper"></div>
-                        </div>
-                        <div class="glass-card display-bxh-archive">
-                            <h3 id="sc-archive-title">BẢNG VINH DANH THÀNH TÍCH</h3>
-                            <div class="bxh-wrapper" id="bxh-container-sc"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
     <style>
         /* --- HỆ THỐNG LAYOUT ĐỘNG GRID/FLEX --- */
 .bxh-layout-archive {
