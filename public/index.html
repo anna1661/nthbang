@@ -15,16 +15,53 @@
                 <div class="brand-name">BANG HỘI THÁNH VỰC</div>
             </div>
             <nav class="menu-nav">
-                <button class="menu-btn active" onclick="switchMainTab('bangchien')">🛡️ BANG CHIẾN</button>
+                <button class="menu-btn active" onclick="switchMainTab('thanhvien')">👥 THÀNH VIÊN BANG</button>
+                <button class="menu-btn" onclick="switchMainTab('bangchien')">🛡️ BANG CHIẾN</button>
                 <button class="menu-btn" onclick="switchMainTab('scrim')">⚔️ THAM GIA SCRIM</button>
-                <button class="menu-btn" onclick="switchMainTab('thanhvien')">👥 THÀNH VIÊN BANG</button>
             </nav>
             <div class="sidebar-footer">Đang đăng nhập: <strong>BTV</strong></div>
         </aside>
 
         <main class="main-content">
             
-            <div id="main-bangchien" class="main-tab-pane active">
+            <div id="main-thanhvien" class="main-tab-pane active">
+                <div class="sub-tab-bar">
+                    <button class="sub-btn active">📑 Toàn Bộ Thành Viên Bang Hội</button>
+                </div>
+                <div class="sub-tab-content active">
+                    <div class="grid-layout">
+                        <div class="glass-card">
+                            <h3>QUẢN LÝ THÀNH VIÊN BANG</h3>
+                            <div class="form-group">
+                                <label>TÊN THÀNH VIÊN</label>
+                                <input type="text" id="tv-name" class="form-control" placeholder="Nhập tên ingame...">
+                                <label>ID GAME</label>
+                                <input type="text" id="tv-id" class="form-control" placeholder="Ví dụ: 0001">
+                                <label>MÔN PHÁI</label>
+                                <select id="tv-phai" class="form-control"></select>
+                                <label>CHỨC VỤ BANG HỘI</label>
+                                <select id="tv-chucvu" class="form-control"></select>
+                                <label>GHI CHÚ / THÔNG TIN RIÊNG</label>
+                                <input type="text" id="tv-note" class="form-control" placeholder="Nhập ghi chú cá nhân thành viên...">
+                                <button class="btn btn-primary" onclick="registerGuildMember()">Thêm vào sổ bang</button>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3>SỔ PHẢ HỆ THÀNH VIÊN THÁNH VỰC</h3>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr><th>Tên thành viên</th><th>ID Game</th><th>Môn Phái</th><th>Chức vụ</th><th>Ghi chú</th><th>Hành động</th></tr>
+                                    </thead>
+                                    <tbody id="tbl-tv-ds"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-bangchien" class="main-tab-pane">
                 <div class="sub-tab-bar">
                     <button class="sub-btn active" onclick="switchSubTab('bc', 'ds')">1. Danh Sách Tham Gia</button>
                     <button class="sub-btn" onclick="switchSubTab('bc', 'dh')">2. Xếp Đội Hình (Excel)</button>
@@ -94,8 +131,7 @@
 
                         <div class="glass-card archive-sidebar">
                             <h3>LỊCH SỬ TRẬN ĐẤU</h3>
-                            <div id="bc-archive-list" class="archive-list-wrapper">
-                                </div>
+                            <div id="bc-archive-list" class="archive-list-wrapper"></div>
                         </div>
 
                         <div class="glass-card display-bxh-archive">
@@ -187,70 +223,40 @@
                 </div>
             </div>
 
-            <div id="main-thanhvien" class="main-tab-pane">
-                <div class="sub-tab-bar">
-                    <button class="sub-btn active">📑 Toàn Bộ Thành Viên Bang Hội</button>
-                </div>
-                <div class="sub-tab-content active">
-                    <div class="grid-layout">
-                        <div class="glass-card">
-                            <h3>QUẢN LÝ THÀNH VIÊN BANG</h3>
-                            <div class="form-group">
-                                <label>TÊN THÀNH VIÊN</label>
-                                <input type="text" id="tv-name" class="form-control" placeholder="Nhập tên ingame...">
-                                <label>ID GAME</label>
-                                <input type="text" id="tv-id" class="form-control" placeholder="Ví dụ: 0001">
-                                <label>MÔN PHÁI</label>
-                                <select id="tv-phai" class="form-control"></select>
-                                <label>CHỨC VỤ BANG HỘI</label>
-                                <select id="tv-chucvu" class="form-control"></select>
-                                <label>GHI CHÚ / THÔNG TIN RIÊNG</label>
-                                <input type="text" id="tv-note" class="form-control" placeholder="Nhập ghi chú cá nhân thành viên...">
-                                <button class="btn btn-primary" onclick="registerGuildMember()">Thêm vào sổ bang</button>
-                            </div>
-                        </div>
-                        <div class="glass-card">
-                            <h3>SỔ PHẢ HỆ THÀNH VIÊN THÁNH VỰC</h3>
-                            <div class="table-responsive">
-                                <table>
-                                    <thead>
-                                        <tr><th>Tên thành viên</th><th>ID Game</th><th>Môn Phái</th><th>Chức vụ</th><th>Ghi chú</th><th>Hành động</th></tr>
-                                    </thead>
-                                    <tbody id="tbl-tv-ds"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </main>
     </div>
 
     <style>
         .bxh-layout-archive {
             display: grid;
-            grid-template-columns: 320px 250px 1fr;
+            grid-template-columns: 320px 260px 1fr;
             gap: 20px;
             align-items: start;
         }
         .archive-list-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             max-height: 550px;
             overflow-y: auto;
-            padding-right: 5px;
+        }
+        .archive-item-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
         }
         .archive-item-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #ffffff;
-            padding: 10px;
+            padding: 12px;
+            padding-right: 40px; /* Chừa khoảng trống bên phải cho nút xóa */
             border-radius: 6px;
             text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
+            width: 100%;
         }
         .archive-item-btn:hover {
             background: rgba(244, 63, 94, 0.15);
@@ -261,7 +267,6 @@
             color: #fff;
             border-color: #f43f5e;
             font-weight: bold;
-            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
         }
         .archive-item-btn .arch-date {
             display: block;
@@ -271,6 +276,23 @@
         }
         .archive-item-btn.active .arch-date {
             color: rgba(255, 255, 255, 0.8);
+        }
+        /* Nút xóa trận đấu thiết kế nhỏ gọn, tinh tế ở góc phải thẻ */
+        .btn-delete-match {
+            position: absolute;
+            right: 10px;
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .btn-delete-match:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
         }
     </style>
 
@@ -328,7 +350,6 @@
                 renderExcelGrid('bangchien', CLIENT_DATA.doiHinhBangChien || {});
                 renderExcelGrid('scrim', CLIENT_DATA.doiHinhScrim || {});
                 
-                // Khởi tạo danh sách lưu trữ cột giữa
                 buildArchiveSidebar('bangchien', CLIENT_DATA.bxhBangChien || []);
                 buildArchiveSidebar('scrim', CLIENT_DATA.bxhScrim || []);
             } catch (error) {
@@ -366,13 +387,12 @@
             `).join('');
         }
 
-        // TỰ ĐỘNG GOM CÁC TRẬN ĐÃ LƯU TRÊN DB THÀNH DANH SÁCH LƯU TRỮ ĐỂ CLICK
+        // TỰ ĐỘNG PHÂN TÁCH TRẬN VÀ THÊM NÚT XÓA TRẬN ĐẤU ĐIỀN NHẦM
         function buildArchiveSidebar(type, bxhList) {
             const pre = type === 'bangchien' ? 'bc' : 'sc';
             const container = document.getElementById(`${pre}-archive-list`);
             if(!container) return;
 
-            // Lọc ra danh sách các tên trận đấu duy nhất (Unique Match Names)
             const uniqueMatches = [];
             const map = new Map();
             for (const item of bxhList) {
@@ -387,10 +407,10 @@
 
             if(uniqueMatches.length === 0) {
                 container.innerHTML = `<div style="color:#64748b; font-size:12px; text-align:center; padding:20px;">Chưa có trận nào được lưu.</div>`;
+                document.getElementById(`bxh-container-${pre}`).innerHTML = "";
                 return;
             }
 
-            // Chọn mặc định trận đầu tiên nếu chưa chọn trận nào
             if(type === 'bangchien' && !CURRENT_SELECTED_MATCH_BC) CURRENT_SELECTED_MATCH_BC = uniqueMatches[0].name;
             if(type === 'scrim' && !CURRENT_SELECTED_MATCH_SC) CURRENT_SELECTED_MATCH_SC = uniqueMatches[0].name;
 
@@ -399,15 +419,38 @@
             container.innerHTML = uniqueMatches.map(m => {
                 const activeClass = m.name === currentActive ? 'active' : '';
                 return `
-                    <button class="archive-item-btn ${activeClass}" onclick="selectArchiveMatch('${type}', '${m.name}')">
-                        🎯 ${m.name}
-                        <span class="arch-date">📅 Ngày lưu: ${m.date}</span>
-                    </button>
+                    <div class="archive-item-container">
+                        <button class="archive-item-btn ${activeClass}" onclick="selectArchiveMatch('${type}', '${m.name}')">
+                            🎯 ${m.name}
+                            <span class="arch-date">📅 Lịch sử: ${m.date}</span>
+                        </button>
+                        <button class="btn-delete-match" title="Xóa toàn bộ trận này" onclick="deleteEntireMatch('${type}', '${m.name}')">🗑️</button>
+                    </div>
                 `;
             }).join('');
 
-            // Chạy hàm hiển thị dữ liệu cho trận đang active
             displayMatchBXH(type, currentActive, bxhList);
+        }
+
+        // HÀM XỬ LÝ XÓA TOÀN BỘ CẢ TRẬN ĐẤU KHI ĐIỀN SAI NHẦM LẪN
+        async function deleteEntireMatch(type, matchName) {
+            if(!confirm(`Em có chắc chắn muốn xóa toàn bộ dữ liệu lịch sử của [${matchName}] không? Thao tác này không thể hoàn tác.`)) return;
+            
+            try {
+                await fetch('/api/delete-entire-match', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ loai: type, matchName })
+                });
+                
+                // Reset biến chọn đang hoạt động về rỗng để hệ thống tự lấy trận liền kề
+                if(type === 'bangchien') CURRENT_SELECTED_MATCH_BC = "";
+                else CURRENT_SELECTED_MATCH_SC = "";
+                
+                await loadAllData();
+            } catch (err) {
+                alert("Có lỗi xảy ra khi xóa trận đấu!");
+            }
         }
 
         function selectArchiveMatch(type, matchName) {
@@ -421,7 +464,9 @@
         function displayMatchBXH(type, matchName, fullList) {
             const pre = type === 'bangchien' ? 'bc' : 'sc';
             const titleEl = document.getElementById(`${pre}-archive-title`);
-            if(titleEl) titleEl.innerText = `🏆 BẢNG VÀNG: ${matchName.toUpperCase()}`;
+            if(titleEl) {
+                titleEl.innerText = matchName ? `🏆 BẢNG VÀNG GIẢI ĐẤU: ${matchName.toUpperCase()}` : "BẢNG VINH DANH THÀNH TÍCH (CHƯA CHỌN TRẬN)";
+            }
 
             const filteredData = fullList.filter(p => p.matchName === matchName);
             renderBXHCore(type, filteredData);
@@ -547,7 +592,7 @@
                             tempDoiHinh[teamName].push({
                                 ten: nameInp.value.trim(),
                                 idGame: idInp.value.trim(),
-                                monPhai: phaiInp.value.trim()
+                                phai: phaiInp.value.trim()
                             });
                         }
                     }
@@ -563,7 +608,6 @@
             await loadAllData();
         }
 
-        // TỰ ĐỘNG ĐỂ HỆ THỐNG LƯU TRẬN THEO TÊN TRẬN DO EM ĐẶT
         async function saveBXH(type) {
             const pre = type === 'bangchien' ? 'bc' : 'sc';
             const matchName = document.getElementById(`${pre}-bxh-matchname`).value.trim();
@@ -593,7 +637,6 @@
             document.getElementById(`${pre}-bxh-dt`).value = 0;
             document.getElementById(`${pre}-bxh-m`).value = 0;
             
-            // Đồng bộ tên trận hiện tại sang biến tạm để giữ vị trí màn hình hiển thị ngay trận đó
             if(type === 'bangchien') CURRENT_SELECTED_MATCH_BC = matchName;
             else CURRENT_SELECTED_MATCH_SC = matchName;
 
@@ -610,6 +653,7 @@
             await loadAllData();
         }
 
+        // GIỮ NGUYÊN HOÀN TOÀN LOGIC HIỂN THỊ BXH THEO CẤU TRÚC ĐOÀN 1 - ĐOÀN 2 - ĐOÀN 3
         function renderBXHCore(type, bxhList) {
             const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
             if(!container) return;
