@@ -352,6 +352,7 @@
     </div>
 
     <script>
+        // SỬA LỖI CHÍ MẠNG: Đổi chính xác từ "Thần Tương" thành "Thần Tướng" khớp 100% database
         const MON_PHAI = ["Cửu Linh", "Thiết Y", "Thần Tướng", "Toái Mộng", "Tố Vấn", "Huyết Hà", "Long Ngâm"];
         const TEAMS = ["Team Mid", "Team Trụ", "Team Def", "Team Vật tư"];
         const CHUC_VU = ["Đại Đương Gia", "Nhị Đương Gia", "Tam Đương Gia", "Sát Đường Chủ", "Tứ Đương Gia", "Ngũ Đương Gia", "Socola Đường Chủ", "Socola Phó Đường Chủ", "Socola Bang Chúng", "Matcha Đường Chủ", "Vani Đường Chủ", "Quân Sư", "Yến Sư", "Mưu Khách", "Nhã Công", "Bang Chúng", "Học Việc"];
@@ -647,14 +648,13 @@
             renderBXHCore(type, fullList.filter(p => p.matchName === matchName));
         }
 
-        /* --- PHẦN RENDER GRID CHUẨN ĐÚNG THUỘC TÍNH CỦA EM ĐỂ KHÔNG BỊ TRẮNG Ô --- */
+        /* --- SỬA HOÀN TOÀN BIẾN ĐIỀU KIỆN RENDER ĐỘ LẬP KHÔNG LO LỖI TRẮNG Ô --- */
         function renderExcelGrid(type, doiHinh) {
             let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
             const container = document.getElementById(containerId);
             if(!container) return;
 
             const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
-            // Tab Phái dùng 25 dòng theo yêu cầu, Bang Chiến/Scrim giữ nguyên 30 dòng
             const maxRows = (type === 'phai') ? 25 : 30;
 
             container.innerHTML = columnsList.map(colName => {
@@ -664,11 +664,8 @@
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
                     const readonlyAttr = USER_ROLE !== 'admin' ? 'readonly' : '';
                     
-                    // KHẮC PHỤC CHÍ MẠNG: Trả lại đúng hoàn toàn cấu trúc attribute data-team của file cũ để đồng bộ Backend
-                    let dataAttr = `data-team="${colName}"`;
-                    if(type === 'phai') {
-                        dataAttr = `data-phai="${colName}"`;
-                    }
+                    // ĐỒNG BỘ: Server cũ nhận diện chung thuộc tính data-team để bóc tách cột dữ liệu
+                    const dataAttr = `data-team="${colName}"`;
 
                     rowsHtml += `
                         <div class="excel-row-data">
@@ -693,18 +690,14 @@
 
             columnsList.forEach(colName => {
                 tempDoiHinh[colName] = [];
-                // Tìm kiếm chính xác các dòng dựa trên loại tab để tránh lỗi gom dữ liệu trống
-                const queryKeyName = (type === 'phai') ? `input[data-phai="${colName}"][data-field="ten"]` : `input[data-team="${colName}"][data-field="ten"]`;
-                const nameInputs = container.querySelectorAll(queryKeyName);
+                // Quét chính xác khối dữ liệu input nằm trong panel chỉ định
+                const nameInputs = container.querySelectorAll(`input[data-team="${colName}"][data-field="ten"]`);
                 
-                nameInputs.forEach((nameInp, idx) => {
+                nameInputs.forEach((nameInp) => {
                     if(nameInp && nameInp.value.trim()) {
                         const parentRow = nameInp.closest('.excel-row-data');
-                        const queryKeyId = (type === 'phai') ? `input[data-phai="${colName}"][data-field="idGame"]` : `input[data-team="${colName}"][data-field="idGame"]`;
-                        const queryKeyPhai = (type === 'phai') ? `input[data-phai="${colName}"][data-field="monPhai"]` : `input[data-team="${colName}"][data-field="monPhai"]`;
-                        
-                        const idInp = parentRow.querySelector(queryKeyId);
-                        const phaiInp = parentRow.querySelector(queryKeyPhai);
+                        const idInp = parentRow.querySelector(`input[data-team="${colName}"][data-field="idGame"]`);
+                        const phaiInp = parentRow.querySelector(`input[data-team="${colName}"][data-field="monPhai"]`);
                         
                         tempDoiHinh[colName].push({ 
                             ten: nameInp.value.trim(), 
