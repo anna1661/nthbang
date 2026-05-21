@@ -108,18 +108,44 @@
                 </div>
                 <div id="bc-bxh" class="sub-tab-content">
                     <div class="bxh-layout-archive">
-                        <div class="glass-card form-bxh admin-only">
-                            <h3>LƯU THÀNH TÍCH TRẬN MỚI</h3>
-                            <input type="text" id="bc-bxh-matchname" class="form-control" placeholder="Tên trận...">
-                            <label>Tên nhân vật</label><input type="text" id="bc-bxh-name" class="form-control">
-                            <label>ID Game</label><input type="text" id="bc-bxh-id" class="form-control">
-                            <label>Môn Phái</label><select id="bc-bxh-phai" class="form-control"></select>
-                            <label>Đoàn</label><select id="bc-bxh-doan" class="form-control"><option value="Đoàn 1">Đoàn 1</option><option value="Đoàn 2">Đoàn 2</option><option value="Đoàn 3">Đoàn 3</option></select>
-                            <label>Dame Người</label><input type="number" id="bc-bxh-dn" class="form-control" value="0">
-                            <label>Dame Trụ</label><input type="number" id="bc-bxh-dt" class="form-control" value="0">
-                            <label>Mạng</label><input type="number" id="bc-bxh-m" class="form-control" value="0">
-                            <button class="btn btn-primary" onclick="saveBXH('bangchien')">Cập nhật</button>
-                        </div>
+    <div class="glass-card form-bxh admin-only">
+        <h3>LƯU THÀNH TÍCH TRẬN MỚI</h3>
+        <input type="text" id="bc-bxh-matchname" class="form-control" placeholder="Tên trận...">
+        <label>Tên nhân vật</label><input type="text" id="bc-bxh-name" class="form-control">
+        <label>ID Game</label><input type="text" id="bc-bxh-id" class="form-control">
+        <label>Môn Phái</label><select id="bc-bxh-phai" class="form-control"></select>
+        <label>Đoàn</label>
+        <select id="bc-bxh-doan" class="form-control">
+            <option value="Đoàn 1">Đoàn 1</option>
+            <option value="Đoàn 2">Đoàn 2</option>
+            <option value="Đoàn 3">Đoàn 3</option>
+        </select>
+        <label>Dame Người</label><input type="number" id="bc-bxh-dn" class="form-control" value="0">
+        <label>Dame Trụ</label><input type="number" id="bc-bxh-dt" class="form-control" value="0">
+        <label>Mạng</label><input type="number" id="bc-bxh-m" class="form-control" value="0">
+        <button class="btn btn-primary" onclick="saveBXH('bangchien')">Cập nhật</button>
+    </div>
+
+    <div class="bxh-layout-archive">
+    
+    <div class="glass-card form-bxh admin-only">
+        <h3>LƯU THÀNH TÍCH TRẬN MỚI</h3>
+        <button class="btn btn-primary" onclick="saveBXH('bangchien')">Cập nhật</button>
+    </div>
+
+    <div class="bxh-main-content">
+        <div class="glass-card archive-sidebar">
+            <h3>LỊCH SỬ TRẬN ĐẤU</h3>
+            <div id="bc-archive-list" class="archive-list-wrapper"></div>
+        </div>
+        
+        <div class="glass-card display-bxh-archive">
+            <h3 id="bc-archive-title">BẢNG VINH DANH THÀNH TÍCH</h3>
+            <div class="bxh-wrapper" id="bxh-container-bc"></div>
+        </div>
+    </div>
+
+</div>
                         <div class="glass-card archive-sidebar">
                             <h3>LỊCH SỬ TRẬN ĐẤU</h3>
                             <div id="bc-archive-list" class="archive-list-wrapper"></div>
@@ -198,93 +224,95 @@
     </div>
 
     <style>
-        /* ========================================================
-   CSS MỚI CHUẨN: TỰ ĐỘNG CÂN GIỮA, TRÀN FULL & HIỆN ĐỦ DỮ LIỆU
-   ======================================================== */
-
-/* Khung layout bọc ngoài sử dụng flex wrap linh hoạt */
+        /* --- HỆ THỐNG LAYOUT ĐỘNG GRID/FLEX --- */
 .bxh-layout-archive {
     display: flex;
-    flex-wrap: wrap; /* Cho phép các phần tử tự xuống dòng khi thiếu không gian */
+    flex-direction: column;
     gap: 20px;
     width: 100%;
-    max-width: 1250px;
-    margin: 0 auto; /* Căn giữa toàn bộ hệ thống */
-    justify-content: center; /* Đẩy ra chính giữa dòng */
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
-/* Định cấu hình cho 2 cột Tiêu chuẩn khi có Admin (Nhập điểm và Lịch sử) */
+/* Khi Admin hiển thị: Đẩy form lên trên hoặc dàn ngang tùy màn hình */
 .bxh-layout-archive .form-bxh {
-    flex: 1 1 450px; /* Độ rộng linh hoạt tối thiểu 450px */
-    max-width: 100%;
-}
-
-.bxh-layout-archive .archive-sidebar {
-    flex: 1 1 350px;
-    max-width: 100%;
-}
-
-/* KHỐI QUAN TRỌNG: Khung chứa Bảng Vàng giải đấu luôn chiếm trọn 100% dòng */
-.bxh-layout-archive .display-bxh-archive {
-    flex: 1 1 100% !important; 
-    width: 100% !important;
-    clear: both;
-    margin-top: 10px;
-}
-
-/* Khối bọc từng Đoàn (Đoàn 1, 2, 3) */
-.doan-block-wrapper {
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
     width: 100%;
     box-sizing: border-box;
 }
 
-/* Tiêu đề Đoàn 1, Đoàn 2, Đoàn 3 */
+/* Khung chứa Lịch Sử + Bảng Vàng nằm ngang cạnh nhau */
+.bxh-main-content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* Thiết lập tỉ lệ: Lịch sử chiếm 30%, Bảng vàng chiếm 70% dòng */
+.archive-sidebar {
+    flex: 0 0 320px;
+    width: 320px;
+}
+.display-bxh-archive {
+    flex: 1;
+    min-width: 0; /* Chống vỡ layout trên trình duyệt */
+}
+
+/* Khi ẩn Admin (Người xem thường): Khung bọc tự căn giữa */
+body:not(.is-admin) .bxh-main-content {
+    justify-content: center;
+}
+
+.archive-list-wrapper {
+    max-height: 350px;
+    overflow-y: auto;
+}
+.archive-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+}
+.archive-item:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* --- ĐỊNH DẠNG BẢNG DANH HIỆU THÀNH VIÊN --- */
+.doan-block-wrapper {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 .doan-title-head {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     color: #fda4af;
-    margin-bottom: 15px;
-    text-align: left;
-    border-left: 4px solid #f43f5e;
-    padding-left: 10px;
+    margin-bottom: 10px;
+    border-left: 3px solid #f43f5e;
+    padding-left: 8px;
 }
 
-/* Ép các hàng thành viên gốc của em dàn ngang rộng ra hết cỡ */
+/* Hàng thành viên được chia dạng ô thẳng hàng */
 .bxh-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 70px 100px 110px 90px 100px 100px 60px 100px;
     align-items: center;
-    justify-content: space-between; /* Căn đều các cột thông số ra hai bên */
-    padding: 12px 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    gap: 15px;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 10px 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+    text-align: center;
 }
-
-/* Đảm bảo các cột dữ liệu gốc có khoảng cách đứng rộng rãi, không bị dính chữ */
-.bxh-rank { min-width: 70px; font-weight: bold; }
-.bxh-name { min-width: 130px; }
-.bxh-id { min-width: 110px; }
-.bxh-phai { min-width: 100px; }
-.bxh-stat { min-width: 110px; text-align: center; }
-
-/* Các định dạng bổ trợ khác */
-.badge-rank {
-    background: #e11d48;
-    color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-}
-.text-gold { color: #f59e0b !important; font-weight: bold; }
-.text-cyan { color: #06b6d4 !important; }
-.text-red { color: #ef4444 !important; }
+.bxh-rank { text-align: left; font-weight: bold; color: #fff; }
+.bxh-name { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bxh-id { font-family: monospace; color: #cbd5e1; }
+.bxh-phai { color: #60a5fa; }
+.text-gold { color: #fbbf24 !important; font-weight: bold; }
+.text-cyan { color: #22d3ee !important; }
+.text-red { color: #f87171 !important; }
     </style>
 
     <script>
@@ -649,35 +677,55 @@
 
         function renderBXHCore(type, bxhList) {
     const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
-    if(!container) return;
-    const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
+    if (!container) return;
     
-    container.innerHTML = doans.map(doanName => {
-        const players = bxhList.filter(p => p.doan === doanName).sort((a,b) => b.dameNguoi - a.dameNguoi);
-        let rows = players.map((p, idx) => `
-            <div class="bxh-item">
-                <div class="bxh-rank">TOP ${idx+1}</div>
-                <div class="bxh-name text-pink"><strong>${p.ten}</strong></div>
-                <div class="bxh-id"><code>${p.idGame}</code></div>
-                <div class="bxh-phai text-blue">${p.monPhai}</div>
-                <div class="bxh-stat text-gold">🔥 ${p.dameNguoi.toLocaleString()}</div>
-                <div class="bxh-stat text-cyan">🏰 ${p.dameTru.toLocaleString()}</div>
-                <div class="bxh-stat text-red">⚔️ ${p.mang}</div>
-                <div class="admin-only" style="margin-left:auto;">
-                    <button class="btn-action-del" style="padding:2px 8px; font-size:11px;" onclick="deleteBXH('${type}', '${p.ten}')">Xóa</button>
-                </div>
-            </div>
-        `).join('');
+    const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
+    let finalHtml = "";
+
+    for (let i = 0; i < doans.length; i++) {
+        let doanName = doans[i];
+        let players = bxhList.filter(p => p.doan === doanName).sort((a, b) => b.dameNguoi - a.dameNguoi);
         
-        return `
+        let headerRow = `
+            <div class="bxh-header-row">
+                <div>Hạng</div><div>Tên</div><div>ID Game</div><div>Môn Phái</div><div>Dame Người</div><div>Dame Trụ</div><div>Mạng</div><div class="admin-only">Hành động</div>
+            </div>`;
+
+        let rowsHtml = "";
+        for (let j = 0; j < players.length; j++) {
+            let p = players[j];
+            let rankIdx = j + 1;
+            rowsHtml += `
+                <div class="bxh-data-row">
+                    <div class="bxh-col-rank">TOP ${rankIdx}</div>
+                    <div class="bxh-col-name text-pink"><strong>${p.ten}</strong></div>
+                    <div class="bxh-col-id"><code>${p.idGame}</code></div>
+                    <div class="bxh-col-phai">${p.monPhai}</div>
+                    <div class="text-gold">${p.dameNguoi.toLocaleString()}</div>
+                    <div class="text-cyan">${p.dameTru.toLocaleString()}</div>
+                    <div class="text-red">${p.mang}</div>
+                    <div class="admin-only">
+                        <button class="btn-action-del" style="padding:2px 6px; font-size:11px;" onclick="deleteBXH('${type}', '${p.ten}')">Xóa</button>
+                    </div>
+                </div>`;
+        }
+
+        let bodyContent = players.length > 0 ? headerRow + rowsHtml : '<div style="color:#64748b; padding:10px; text-align:center;">Trống</div>';
+
+        finalHtml += `
             <div class="doan-block-wrapper">
                 <div class="doan-title-head">${doanName.toUpperCase()}</div>
                 <div class="bxh-list-rows">
-                    ${rows || '<div style="color:#64748b; padding: 10px; text-align:center;">Chưa có dữ liệu thông số của đoàn này.</div>'}
+                    ${bodyContent}
                 </div>
-            </div>
-        `;
-    }).join('');
+            </div>`;
+    }
+
+    container.innerHTML = finalHtml;
+
+    if (typeof checkAdminAuth === 'function') {
+        checkAdminAuth();
+    }
 }
 
         window.addEventListener('DOMContentLoaded', async () => {
