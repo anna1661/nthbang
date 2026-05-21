@@ -1,218 +1,182 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 
-// --- CẤU HÌNH CỔNG LINH HOẠT CHO RENDER ---
 const PORT = process.env.PORT || 3000;
+const DB_FILE = path.join(__dirname, 'database.json');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- CƠ SỞ DỮ LIỆU ĐỘNG (LƯU TRONG BỘ NHỚ RAM) ---
-
-// [BỔ SUNG]: Dữ liệu quản lý Thành Viên Toàn Bang
-let dsThanhVienBang = [
-    { ten: "SUPREME_GM", idGame: "0001", monPhai: "Cửu Linh", chucVu: "Đại Đương Gia", ghiChu: "Chủ bang" },
-    { ten: "Hắc_Công_Tử", idGame: "0024", monPhai: "Thiết Y", chucVu: "Sát Đường Chủ", ghiChu: "Main tank" }
-];
-
-// 1. Dữ liệu thành viên đăng ký tham gia (Danh sách tổng)
-let dsThamGiaBangChien = [
-    { ten: "SUPREME_GM", idGame: "0001", monPhai: "Cửu Linh", khuVuc: "Team Mid", ghiChu: "" },
-    { ten: "Hắc_Công_Tử", idGame: "0024", monPhai: "Thiết Y", khuVuc: "Team Def", ghiChu: "" }
-];
-
-let dsThamGiaScrim = [
-    { ten: "SUPREME_GM", idGame: "0001", monPhai: "Cửu Linh", khuVuc: "Team Mid", ghiChu: "" }
-];
-
-// 2. Dữ liệu xếp Đội hình chiến thuật (Chia nhóm dạng Excel)
-let doiHinhBangChien = {
-    "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": []
-};
-let doiHinhScrim = {
-    "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": []
+// --- CƠ SỞ DỮ LIỆU CỨNG FILE JSON (CHỐNG MẤT DỮ LIỆU) ---
+let db = {
+    users: [
+        { taiKhoan: "admin", matKhau: "123456", quyen: "admin" } // Tài khoản admin mặc định
+    ],
+    dsThanhVienBang: [],
+    dsThamGiaBangChien: [],
+    dsThamGiaScrim: [],
+    doiHinhBangChien: { "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": [] },
+    doiHinhScrim: { "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": [] },
+    bxhBangChien: [],
+    bxhScrim: []
 };
 
-// 3. Dữ liệu điểm số Bảng Xếp Hạng (Đã tích hợp matchName để lưu trữ thành các trận riêng biệt)
-let bxhBangChien = [
-    { matchName: "BC Kim Phong Trận 1", ten: "SUPREME_GM", idGame: "0001", monPhai: "Cửu Linh", doan: "Đoàn 1", dameNguoi: 1500000, dameTru: 450000, mang: 18, createdAt: "21/05/2026" },
-    { matchName: "BC Kim Phong Trận 1", ten: "Hắc_Công_Tử", idGame: "0024", monPhai: "Thiết Y", doan: "Đoàn 2", dameNguoi: 400000, dameTru: 900000, mang: 5, createdAt: "21/05/2026" }
-];
+// Hàm đọc dữ liệu từ file khi mở server
+function loadDatabase() {
+    try {
+        if (fs.existsSync(DB_FILE)) {
+            const data = fs.readFileSync(DB_FILE, 'utf8');
+            db = JSON.parse(data);
+            console.log("[HỆ THỐNG] Đã tải dữ liệu thành công từ file database.json");
+        } else {
+            saveDatabase();
+        }
+    } catch (err) {
+        console.error("Lỗi đọc file database:", err);
+    }
+}
 
-let bxhScrim = [
-    { matchName: "Scrim Ngạo Thế T1", ten: "SUPREME_GM", idGame: "0001", monPhai: "Cửu Linh", doan: "Đoàn 1", dameNguoi: 1200000, dameTru: 300000, mang: 12, createdAt: "21/05/2026" }
-];
+// Hàm ghi dữ liệu xuống file cứng khi có thay đổi
+function saveDatabase() {
+    try {
+        fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
+    } catch (err) {
+        console.error("Lỗi ghi file database:", err);
+    }
+}
 
-// --- CÁC ĐƯỜNG DẪN API TRUY XUẤT DỮ LIỆU ---
+// --- API ĐĂNG KÝ / ĐĂNG NHẬP ---
+app.post('/api/auth/register', (req, res) => {
+    const { taiKhoan, matKhau } = req.body;
+    if (!taiKhoan || !matKhau) return res.json({ success: false, error: "Vui lòng nhập đủ tài khoản và mật khẩu!" });
+    
+    const tk = taiKhoan.trim().toLowerCase();
+    const check = db.users.find(u => u.taiKhoan === tk);
+    if (check) return res.json({ success: false, error: "Tài khoản này đã tồn tại rồi!" });
 
-// Lấy toàn bộ dữ liệu hệ thống đổ ra giao diện (Đã thêm mục dsThanhVienBang)
+    // Tài khoản đăng ký mặc định là quyền "user" (Chỉ xem). Muốn làm admin thì sửa trực tiếp trong file database.json thành "admin"
+    db.users.push({ taiKhoan: tk, matKhau: matKhau.trim(), quyen: "user" });
+    saveDatabase();
+    res.json({ success: true });
+});
+
+app.post('/api/auth/login', (req, res) => {
+    const { taiKhoan, matKhau } = req.body;
+    const tk = taiKhoan.trim().toLowerCase();
+    const user = db.users.find(u => u.taiKhoan === tk && u.matKhau === matKhau.trim());
+    
+    if (user) {
+        res.json({ success: true, quyen: user.quyen, taiKhoan: user.taiKhoan });
+    } else {
+        res.json({ success: false, error: "Sai tài khoản hoặc mật khẩu rồi em ơi!" });
+    }
+});
+
+// --- API TRUY XUẤT DỮ LIỆU (AI CŨNG XEM ĐƯỢC) ---
 app.get('/api/all-data', (req, res) => {
-    res.json({ dsThanhVienBang, dsThamGiaBangChien, dsThamGiaScrim, doiHinhBangChien, doiHinhScrim, bxhBangChien, bxhScrim });
+    res.json({ 
+        dsThanhVienBang: db.dsThanhVienBang, 
+        dsThamGiaBangChien: db.dsThamGiaBangChien, 
+        dsThamGiaScrim: db.dsThamGiaScrim, 
+        doiHinhBangChien: db.doiHinhBangChien, 
+        doiHinhScrim: db.doiHinhScrim, 
+        bxhBangChien: db.bxhBangChien, 
+        bxhScrim: db.bxhScrim 
+    });
 });
 
-// [THÊM MỚI]: Thêm thành viên vào sổ bang
-app.post('/api/register-member', (req, res) => {
-    try {
-        const { ten, idGame, monPhai, chucVu, ghiChu } = req.body;
-        if (!ten) return res.status(400).json({ success: false, error: "Tên thành viên không được trống" });
-
-        const idx = dsThanhVienBang.findIndex(p => p.ten && p.ten.toLowerCase() === ten.toLowerCase());
-        if (idx !== -1) {
-            dsThanhVienBang[idx] = { ten, idGame, monPhai, chucVu, ghiChu };
-        } else {
-            dsThanhVienBang.push({ ten, idGame, monPhai, chucVu, ghiChu });
-        }
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Lỗi thêm thành viên bang:", err);
-        res.status(500).json({ success: false });
+// --- MIDDLEWARE CHẶN CÁC THAO TÁC SỬA ĐỔI NẾU KHÔNG PHẢI ADMIN ---
+function checkAdmin(req, res, next) {
+    const userRole = req.headers['user-role'];
+    if (userRole === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ success: false, error: "Quyền lực từ chối! Chỉ Admin mới được thực hiện thao tác này." });
     }
+}
+
+// --- CÁC API THAO TÁC (YÊU CẦU QUYỀN ADMIN QUA ĐƯỜNG TRUYỀN CHECKADMIN) ---
+app.post('/api/register-member', checkAdmin, (req, res) => {
+    const { ten, idGame, monPhai, chucVu, ghiChu } = req.body;
+    if (!ten) return res.status(400).json({ success: false });
+    const idx = db.dsThanhVienBang.findIndex(p => p.ten.toLowerCase() === ten.toLowerCase());
+    if (idx !== -1) db.dsThanhVienBang[idx] = { ten, idGame, monPhai, chucVu, ghiChu };
+    else db.dsThanhVienBang.push({ ten, idGame, monPhai, chucVu, ghiChu });
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// [THÊM MỚI]: Xóa thành viên khỏi sổ bang
-app.post('/api/delete-member', (req, res) => {
-    try {
-        const { ten } = req.body;
-        dsThanhVienBang = dsThanhVienBang.filter(p => p.ten !== ten);
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Lỗi xóa thành viên bang:", err);
-        res.status(500).json({ success: false });
-    }
+app.post('/api/delete-member', checkAdmin, (req, res) => {
+    const { ten } = req.body;
+    db.dsThanhVienBang = db.dsThanhVienBang.filter(p => p.ten !== ten);
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// Xử lý đăng ký danh sách tham gia chiến trường
-app.post('/api/register', (req, res) => {
-    try {
-        const { loai, ten, idGame, monPhai, khuVuc, ghiChu } = req.body;
-        if (!ten) return res.status(400).json({ success: false, error: "Tên không được trống" });
-
-        const targetList = loai === 'bangchien' ? dsThamGiaBangChien : dsThamGiaScrim;
-        
-        const idx = targetList.findIndex(p => p.ten && p.ten.toLowerCase() === ten.toLowerCase());
-        if (idx !== -1) {
-            targetList[idx] = { ten, idGame, monPhai, khuVuc, ghiChu };
-        } else {
-            targetList.push({ ten, idGame, monPhai, khuVuc, ghiChu });
-        }
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Lỗi Đăng ký quân số:", err);
-        res.status(500).json({ success: false });
-    }
+app.post('/api/register', checkAdmin, (req, res) => {
+    const { loai, ten, idGame, monPhai, khuVuc, ghiChu } = req.body;
+    if (!ten) return res.status(400).json({ success: false });
+    const targetList = loai === 'bangchien' ? db.dsThamGiaBangChien : db.dsThamGiaScrim;
+    const idx = targetList.findIndex(p => p.ten.toLowerCase() === ten.toLowerCase());
+    if (idx !== -1) targetList[idx] = { ten, idGame, monPhai, khuVuc, ghiChu };
+    else targetList.push({ ten, idGame, monPhai, khuVuc, ghiChu });
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// Xóa khỏi danh sách tham gia
-app.post('/api/delete-player', (req, res) => {
-    try {
-        const { loai, ten } = req.body;
-        if (loai === 'bangchien') {
-            dsThamGiaBangChien = dsThamGiaBangChien.filter(p => p.ten !== ten);
-        } else {
-            dsThamGiaScrim = dsThamGiaScrim.filter(p => p.ten !== ten);
-        }
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Lỗi Xóa thành viên:", err);
-        res.status(500).json({ success: false });
-    }
+app.post('/api/delete-player', checkAdmin, (req, res) => {
+    const { loai, ten } = req.body;
+    if (loai === 'bangchien') db.dsThamGiaBangChien = db.dsThamGiaBangChien.filter(p => p.ten !== ten);
+    else db.dsThamGiaScrim = db.dsThamGiaScrim.filter(p => p.ten !== ten);
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// Cập nhật sơ đồ đội hình Excel chiến thuật
-app.post('/api/save-team-excel', (req, res) => {
-    try {
-        const { loai, doiHinh } = req.body;
-        if (loai === 'bangchien') doiHinhBangChien = doiHinh;
-        else doiHinhScrim = doiHinh;
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Lỗi Lưu đội hình Excel:", err);
-        res.status(500).json({ success: false });
-    }
+app.post('/api/save-team-excel', checkAdmin, (req, res) => {
+    const { loai, doiHinh } = req.body;
+    if (loai === 'bangchien') db.doiHinhBangChien = doiHinh;
+    else db.doiHinhScrim = doiHinh;
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// [SỬA ĐỔI]: Lưu hoặc cập nhật thành tích điểm số dựa vào matchName và tên người chơi
-app.post('/api/save-bxh', (req, res) => {
-    try {
-        const { loai, record } = req.body; 
-        
-        if (!record || !record.matchName || !record.ten) {
-            return res.status(400).json({ success: false, error: "Thiếu thông tin tên trận hoặc tên người chơi!" });
-        }
-
-        const targetBXH = loai === 'bangchien' ? bxhBangChien : bxhScrim;
-        const todayStr = new Date().toLocaleDateString('vi-VN');
-        
-        const formattedRecord = {
-            matchName: record.matchName.trim(),
-            ten: record.ten.trim(),
-            idGame: record.idGame || "0000",
-            monPhai: record.monPhai || "Cửu Linh",
-            doan: record.doan || "Đoàn 1",
-            dameNguoi: parseInt(record.dameNguoi) || 0,
-            dameTru: parseInt(record.dameTru) || 0,
-            mang: parseInt(record.mang) || 0,
-            createdAt: todayStr
-        };
-        
-        // Điều kiện check trùng: Phải trùng CẢ tên trận đấu VÀ tên nhân vật
-        const idx = targetBXH.findIndex(p => 
-            p.matchName && p.matchName.toLowerCase() === formattedRecord.matchName.toLowerCase() &&
-            p.ten && p.ten.trim().toLowerCase() === formattedRecord.ten.toLowerCase()
-        );
-        
-        if (idx !== -1) {
-            targetBXH[idx] = formattedRecord; 
-        } else {
-            targetBXH.push(formattedRecord);  
-        }
-        
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Lỗi Xử lý lưu Bảng Vàng Backend:", err);
-        res.status(500).json({ success: false });
-    }
+app.post('/api/save-bxh', checkAdmin, (req, res) => {
+    const { loai, record } = req.body;
+    if (!record || !record.matchName || !record.ten) return res.status(400).json({ success: false });
+    const targetBXH = loai === 'bangchien' ? db.bxhBangChien : db.bxhScrim;
+    const formattedRecord = {
+        matchName: record.matchName.trim(), ten: record.ten.trim(), idGame: record.idGame || "0000",
+        monPhai: record.monPhai || "Cửu Linh", doan: record.doan || "Đoàn 1",
+        dameNguoi: parseInt(record.dameNguoi) || 0, dameTru: parseInt(record.dameTru) || 0,
+        mang: parseInt(record.mang) || 0, createdAt: new Date().toLocaleDateString('vi-VN')
+    };
+    const idx = targetBXH.findIndex(p => p.matchName.toLowerCase() === formattedRecord.matchName.toLowerCase() && p.ten.toLowerCase() === formattedRecord.ten.toLowerCase());
+    if (idx !== -1) targetBXH[idx] = formattedRecord;
+    else targetBXH.push(formattedRecord);
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// Xóa 1 dòng nhân vật đơn lẻ trong bảng vàng
-app.post('/api/delete-bxh', (req, res) => {
-    try {
-        const { loai, ten } = req.body;
-        if (!ten) return res.status(400).json({ success: false, error: "Thiếu tên để xóa" });
-
-        if (loai === 'bangchien') {
-            bxhBangChien = bxhBangChien.filter(p => p.ten && p.ten.trim().toLowerCase() !== ten.trim().toLowerCase());
-        } else {
-            bxhScrim = bxhScrim.filter(p => p.ten && p.ten.trim().toLowerCase() !== ten.trim().toLowerCase());
-        }
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Lỗi xóa dòng Bảng Vàng:", err);
-        res.status(500).json({ success: false });
-    }
+app.post('/api/delete-bxh', checkAdmin, (req, res) => {
+    const { loai, ten } = req.body;
+    if (loai === 'bangchien') db.bxhBangChien = db.bxhBangChien.filter(p => p.ten.toLowerCase() !== ten.toLowerCase());
+    else db.bxhScrim = db.bxhScrim.filter(p => p.ten.toLowerCase() !== ten.toLowerCase());
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// [THÊM MỚI CẤP THIẾT]: API Xóa sạch toàn bộ dữ liệu của một Trận Đấu khi điền nhầm
-app.post('/api/delete-entire-match', (req, res) => {
-    try {
-        const { loai, matchName } = req.body;
-        if (!matchName) return res.status(400).json({ success: false, error: "Thiếu tên trận đấu để xóa" });
-
-        if (loai === 'bangchien') {
-            bxhBangChien = bxhBangChien.filter(item => item.matchName && item.matchName.toLowerCase() !== matchName.toLowerCase());
-        } else {
-            bxhScrim = bxhScrim.filter(item => item.matchName && item.matchName.toLowerCase() !== matchName.toLowerCase());
-        }
-
-        res.json({ success: true, message: "Đã xóa toàn bộ trận đấu thành công!" });
-    } catch (err) {
-        console.error("Lỗi xóa toàn bộ trận đấu ở Backend:", err);
-        res.status(500).json({ success: false });
-    }
+app.post('/api/delete-entire-match', checkAdmin, (req, res) => {
+    const { loai, matchName } = req.body;
+    if (loai === 'bangchien') db.bxhBangChien = db.bxhBangChien.filter(item => item.matchName.toLowerCase() !== matchName.toLowerCase());
+    else db.bxhScrim = db.bxhScrim.filter(item => item.matchName.toLowerCase() !== matchName.toLowerCase());
+    saveDatabase();
+    res.json({ success: true });
 });
 
-// --- KHỞI CHẠY MÁY CHỦ ---
+// Chạy khởi động hệ thống
+loadDatabase();
 app.listen(PORT, () => {
-    console.log(`[HỆ THỐNG] Máy chủ đang chạy tại cổng: ${PORT}`);
+    console.log(`[HỆ THỐNG] Máy chủ chạy mượt mà tại: http://localhost:${PORT}`);
 });
