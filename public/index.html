@@ -211,6 +211,44 @@
         .btn-delete-match:hover { background: rgba(239, 68, 68, 0.2); border-radius: 4px; }
         /* Style điều khiển ẩn hiện quyền Admin */
         body.is-guest .admin-only { display: none !important; }
+        /* Đẩy toàn bộ cấu trúc grid layout dàn trải đều ra trang */
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr; /* Chuyển sang 1 cột full dòng để bảng chiếm trọn khung hình */
+    gap: 25px;
+    width: 100%;
+    max-width: 1200px; /* Độ rộng tối đa để bảng trải ra vừa vặn, không bị quá loãng */
+    margin: 0 auto; /* Căn toàn bộ nội dung ra chính giữa trang */
+    padding: 10px;
+}
+
+/* Đảm bảo khung chứa card bo tròn bao quanh bảng luôn full 100% */
+.glass-card {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+/* Làm cho bảng (Table) trải rộng hết cỡ */
+.table-responsive table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center; /* Căn chữ trong các ô ra chính giữa cho đẹp */
+}
+
+/* Căn giữa tiêu đề cột và các dòng dữ liệu */
+.table-responsive th, .table-responsive td {
+    padding: 12px 15px;
+    text-align: center; 
+    vertical-align: middle;
+}
+
+/* Riêng phần Quản lý / Đăng ký (nếu là Admin) sẽ cho hiển thị gọn gàng phía trên bảng */
+body:not(.is-guest) .grid-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
     </style>
 
     <script>
@@ -341,34 +379,36 @@
         }
 
         function renderRegisterTable(type, list) {
-            const tbody = document.getElementById(`tbl-${type === 'bangchien' ? 'bc' : 'sc'}-ds`);
-            if(!tbody) return;
-            tbody.innerHTML = list.map(p => `
-                <tr>
-                    <td class="text-pink"><strong>${p.ten}</strong></td>
-                    <td><code>${p.idGame}</code></td>
-                    <td class="text-blue">${p.monPhai}</td>
-                    <td><span class="badge-team">${p.khuVuc}</span></td>
-                    <td style="color: #94a3b8;">${p.ghiChu || ''}</td>
-                    <td class="admin-only"><button class="btn-action-del" onclick="deletePlayer('${type}', '${p.ten}')">Xóa</button></td>
-                </tr>
-            `).join('');
-        }
+    const tbody = document.getElementById(`tbl-${type === 'bangchien' ? 'bc' : 'sc'}-ds`);
+    if(!tbody) return;
+    
+    tbody.innerHTML = list.map(p => `
+        <tr>
+            <td class="text-pink"><strong>${p.ten}</strong></td>
+            <td><code>${p.idGame}</code></td>
+            <td class="text-blue">${p.monPhai || 'Chưa rõ'}</td>
+            <td><span class="badge-team">${p.khuVuc || 'Chưa xếp'}</span></td>
+            <td style="color: #94a3b8;">${p.ghiChu || ''}</td>
+            <td class="admin-only"><button class="btn-action-del" onclick="deletePlayer('${type}', '${p.ten}')">Xóa</button></td>
+        </tr>
+    `).join('');
+}
 
-        function renderGuildMemberTable(list) {
-            const tbody = document.getElementById('tbl-tv-ds');
-            if(!tbody) return;
-            tbody.innerHTML = list.map(p => `
-                <tr>
-                    <td class="text-pink"><strong>${p.ten}</strong></td>
-                    <td><code>${p.idGame}</code></td>
-                    <td class="text-blue">${p.monPhai}</td>
-                    <td><span class="badge-team" style="background:#0284c7;">${p.chucVu}</span></td>
-                    <td style="color: #94a3b8;">${p.ghiChu || ''}</td>
-                    <td class="admin-only"><button class="btn-action-del" onclick="deleteGuildMember('${p.ten}')">Xóa</button></td>
-                </tr>
-            `).join('');
-        }
+       function renderGuildMemberTable(list) {
+    const tbody = document.getElementById('tbl-tv-ds');
+    if(!tbody) return;
+    
+    tbody.innerHTML = list.map(p => `
+        <tr>
+            <td class="text-pink"><strong>${p.ten}</strong></td>
+            <td><code>${p.idGame}</code></td>
+            <td class="text-blue">${p.monPhai || 'Chưa rõ'}</td>
+            <td><span class="badge-team" style="background:#0284c7;">${p.chucVu || 'Bang Chúng'}</span></td>
+            <td style="color: #94a3b8;">${p.ghiChu || ''}</td>
+            <td class="admin-only"><button class="btn-action-del" onclick="deleteGuildMember('${p.ten}')">Xóa</button></td>
+        </tr>
+    `).join('');
+}
 
         function buildArchiveSidebar(type, bxhList) {
             const pre = type === 'bangchien' ? 'bc' : 'sc';
