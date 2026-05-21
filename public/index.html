@@ -647,29 +647,34 @@
             renderBXHCore(type, fullList.filter(p => p.matchName === matchName));
         }
 
-        /* --- SỬA ĐỔI HÀM TÁCH BIỆT RENDER THEO ĐÚNG THUỘC TÍNH GỐC CỦA EM --- */
+        /* --- PHẦN RENDER GRID CHUẨN ĐÚNG THUỘC TÍNH CỦA EM ĐỂ KHÔNG BỊ TRẮNG Ô --- */
         function renderExcelGrid(type, doiHinh) {
             let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
             const container = document.getElementById(containerId);
             if(!container) return;
 
             const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
+            // Tab Phái dùng 25 dòng theo yêu cầu, Bang Chiến/Scrim giữ nguyên 30 dòng
+            const maxRows = (type === 'phai') ? 25 : 30;
 
             container.innerHTML = columnsList.map(colName => {
                 const members = doiHinh[colName] || [];
                 let rowsHtml = "";
-                for(let i = 0; i < 30; i++) {
+                for(let i = 0; i < maxRows; i++) {
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
                     const readonlyAttr = USER_ROLE !== 'admin' ? 'readonly' : '';
                     
-                    // SỬA QUAN TRỌNG: Bang chiến/scrim phải giữ nguyên attribute `data-team` gốc của em để backend ko lỗi ô trắng!
-                    const dataAttr = (type === 'phai') ? `data-phai="${colName}"` : `data-team="${colName}"`;
+                    // KHẮC PHỤC CHÍ MẠNG: Trả lại đúng hoàn toàn cấu trúc attribute data-team của file cũ để đồng bộ Backend
+                    let dataAttr = `data-team="${colName}"`;
+                    if(type === 'phai') {
+                        dataAttr = `data-phai="${colName}"`;
+                    }
 
                     rowsHtml += `
                         <div class="excel-row-data">
-                            <input type="text" value="${m.ten}" ${dataAttr} data-field="ten" class="ex-in p-name" ${readonlyAttr}>
-                            <input type="text" value="${m.idGame}" ${dataAttr} data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
-                            <input type="text" value="${m.monPhai}" ${dataAttr} data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
+                            <input type="text" value="${m.ten || ''}" ${dataAttr} data-field="ten" class="ex-in p-name" ${readonlyAttr}>
+                            <input type="text" value="${m.idGame || ''}" ${dataAttr} data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
+                            <input type="text" value="${m.monPhai || ''}" ${dataAttr} data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
                         </div>
                     `;
                 }
@@ -688,20 +693,23 @@
 
             columnsList.forEach(colName => {
                 tempDoiHinh[colName] = [];
-                const rows = container.querySelectorAll('.excel-row-data');
-                rows.forEach(row => {
-                    const queryKey = (type === 'phai') ? `[data-phai="${colName}"][data-field="ten"]` : `[data-team="${colName}"][data-field="ten"]`;
-                    const nameInp = row.querySelector(queryKey);
+                // Tìm kiếm chính xác các dòng dựa trên loại tab để tránh lỗi gom dữ liệu trống
+                const queryKeyName = (type === 'phai') ? `input[data-phai="${colName}"][data-field="ten"]` : `input[data-team="${colName}"][data-field="ten"]`;
+                const nameInputs = container.querySelectorAll(queryKeyName);
+                
+                nameInputs.forEach((nameInp, idx) => {
                     if(nameInp && nameInp.value.trim()) {
-                        const idKey = (type === 'phai') ? `[data-phai="${colName}"][data-field="idGame"]` : `[data-team="${colName}"][data-field="idGame"]`;
-                        const phaiKey = (type === 'phai') ? `[data-phai="${colName}"][data-field="monPhai"]` : `[data-team="${colName}"][data-field="monPhai"]`;
+                        const parentRow = nameInp.closest('.excel-row-data');
+                        const queryKeyId = (type === 'phai') ? `input[data-phai="${colName}"][data-field="idGame"]` : `input[data-team="${colName}"][data-field="idGame"]`;
+                        const queryKeyPhai = (type === 'phai') ? `input[data-phai="${colName}"][data-field="monPhai"]` : `input[data-team="${colName}"][data-field="monPhai"]`;
                         
-                        const idInp = row.querySelector(idKey);
-                        const phaiInp = row.querySelector(phaiKey);
+                        const idInp = parentRow.querySelector(queryKeyId);
+                        const phaiInp = parentRow.querySelector(queryKeyPhai);
+                        
                         tempDoiHinh[colName].push({ 
                             ten: nameInp.value.trim(), 
-                            idGame: idInp.value.trim(), 
-                            monPhai: phaiInp.value.trim() 
+                            idGame: idInp ? idInp.value.trim() : "", 
+                            monPhai: phaiInp ? phaiInp.value.trim() : "" 
                         });
                     }
                 });
