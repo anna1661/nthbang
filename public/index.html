@@ -128,46 +128,6 @@
         .text-gold { color: #fbbf24 !important; font-weight: bold; }
         .text-cyan { color: #22d3ee !important; }
         .text-red { color: #f87171 !important; font-weight: bold; }
-
-        /* --- LAYOUT XẾP ĐỘI HÌNH THEO PHÁI --- */
-        .phai-grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .phai-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .phai-title-head {
-            font-weight: bold;
-            color: #38bdf8;
-            border-bottom: 2px solid #38bdf8;
-            padding-bottom: 6px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            font-size: 14px;
-        }
-        .phai-member-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            padding: 8px 0;
-            border-bottom: 1px dashed rgba(255,255,255,0.05);
-            font-size: 13px;
-        }
-        .badge-chucvu-phai {
-            font-size: 11px;
-            color: #fbbf24;
-            background: rgba(251, 191, 36, 0.1);
-            padding: 1px 5px;
-            border-radius: 3px;
-            width: fit-content;
-            margin-top: 2px;
-        }
     </style>
 </head>
 <body>
@@ -209,7 +169,7 @@
             <div id="main-thanhvien" class="main-tab-pane active">
                 <div class="sub-tab-bar">
                     <button class="sub-btn active" onclick="switchSubTab('tv', 'ds')">📑 Toàn Bộ Thành Viên Bang Hội</button>
-                    <button class="sub-btn" onclick="switchSubTab('tv', 'phai')">🗂️ Xếp Đội Hình Theo Phái</button>
+                    <button class="sub-btn" onclick="switchSubTab('tv', 'phai')">🗂️ Xếp Thành Viên Theo Phái</button>
                 </div>
                 
                 <div id="tv-ds" class="sub-tab-content active">
@@ -238,11 +198,11 @@
                 </div>
 
                 <div id="tv-phai" class="sub-tab-content">
-                    <div class="glass-card">
-                        <h3>📋 PHÂN LOẠI QUÂN SỐ THEO MÔN PHÁI</h3>
-                        <p style="font-size: 13px; color: #a0aec0; margin-bottom: 10px;">Hệ thống tự động gom nhóm toàn bộ thành viên trong Sổ bang dựa theo hệ phái nhân vật.</p>
-                        <div class="phai-grid-container" id="phai-grid-guild"></div>
+                    <div class="excel-control-panel admin-only">
+                        <button class="btn btn-secondary" onclick="autoBuildTeam('phai')">⚡ Tự động nạp</button>
+                        <button class="btn btn-primary" onclick="saveTeamExcel('phai')">💾 Lưu sơ đồ phái</button>
                     </div>
+                    <div class="excel-grid" id="excel-phai"></div>
                 </div>
             </div>
             
@@ -392,7 +352,7 @@
     </div>
 
     <script>
-        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Toái Mộng", "Tố Vấn", "Thần Tướng", "Long Ngâm", "Huyết Hà"];
+        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Thần Tướng", "Toái Mộng", "Tố Vấn", "Huyết Hà", "Long Ngâm"];
         const TEAMS = ["Team Mid", "Team Trụ", "Team Def", "Team Vật tư"];
         const CHUC_VU = ["Đại Đương Gia", "Nhị Đương Gia", "Tam Đương Gia", "Sát Đường Chủ", "Tứ Đương Gia", "Ngũ Đương Gia", "Socola Đường Chủ", "Socola Phó Đường Chủ", "Socola Bang Chúng", "Matcha Đường Chủ", "Vani Đường Chủ", "Quân Sư", "Yến Sư", "Mưu Khách", "Nhã Công", "Bang Chúng", "Học Việc"];
         
@@ -502,42 +462,10 @@
             if(targetContent) targetContent.classList.add('active');
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
 
-            if(tab === 'phai') {
-                renderMembersByPhai();
+            // Nếu người dùng bấm tab phái, tự động tạo lưới trống hoặc hiển thị dữ liệu
+            if(prefix === 'tv' && tab === 'phai') {
+                renderExcelGrid('phai', CLIENT_DATA.doiHinhPhai || {});
             }
-        }
-
-        // HÀM TỰ ĐỘNG GOM THÀNH VIÊN THEO PHÁI & HIỂN THỊ CHỨC VỤ
-        function renderMembersByPhai() {
-            const gridContainer = document.getElementById('phai-grid-guild');
-            if(!gridContainer) return;
-
-            let guildMembers = CLIENT_DATA.dsThanhVienBang || [];
-            let html = "";
-
-            MON_PHAI.forEach(phaiName => {
-                let filtered = guildMembers.filter(m => m.monPhai === phaiName);
-                let memberRows = "";
-                
-                if(filtered.length > 0) {
-                    filtered.forEach(m => {
-                        memberRows += `
-                            <div class="phai-member-item">
-                                <div>👑 <b>${m.ten}</b> (ID: ${m.idGame || 'Chưa rõ'})</div>
-                                <div class="badge-chucvu-phai">${m.chucVu || 'Bang Chúng'}</div>
-                            </div>`;
-                    });
-                } else {
-                    memberRows = `<div style="color:#64748b; text-align:center; font-size:12px; padding:10px; font-style:italic;">Chưa có thành viên thuộc phái này</div>`;
-                }
-
-                html += `
-                    <div class="phai-card">
-                        <div class="phai-title-head">⚔️ ${phaiName} (${filtered.length})</div>
-                        <div>${memberRows}</div>
-                    </div>`;
-            });
-            gridContainer.innerHTML = html;
         }
 
         async function loadAllData() {
@@ -551,13 +479,10 @@
                 
                 renderExcelGrid('bangchien', CLIENT_DATA.doiHinhBangChien || {});
                 renderExcelGrid('scrim', CLIENT_DATA.doiHinhScrim || {});
+                renderExcelGrid('phai', CLIENT_DATA.doiHinhPhai || {});
                 
                 buildArchiveSidebar('bangchien', CLIENT_DATA.bxhBangChien || []);
                 buildArchiveSidebar('scrim', CLIENT_DATA.bxhScrim || []);
-                
-                if(document.getElementById('tv-phai').classList.contains('active')) {
-                    renderMembersByPhai();
-                }
             } catch (error) {
                 console.error(error);
             }
@@ -576,6 +501,7 @@
                     <td class="admin-only"><button class="btn-action-del" onclick="deletePlayer('${type}', '${p.ten}')">Xóa</button></td>
                 </tr>
             `).join('');
+            checkAdminAuth();
         }
 
         function renderGuildMemberTable(list) {
@@ -591,6 +517,7 @@
                     <td class="admin-only"><button class="btn-action-del" onclick="deleteGuildMember('${p.ten}')">Xóa</button></td>
                 </tr>
             `).join('');
+            checkAdminAuth();
         }
 
         async function registerGuildMember() {
@@ -721,52 +648,99 @@
             renderBXHCore(type, fullList.filter(p => p.matchName === matchName));
         }
 
+        /* HỆ THỐNG PHÁT TRIỂN LƯỚI EXCEL CHO CẢ BA LOẠI TAB (BANG CHIẾN, SCRIM, PHAI) */
         function renderExcelGrid(type, doiHinh) {
-            const container = document.getElementById(`excel-${type === 'bangchien' ? 'bc' : 'sc'}`);
+            let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
+            const container = document.getElementById(containerId);
             if(!container) return;
-            container.innerHTML = TEAMS.map(teamName => {
-                const members = doiHinh[teamName] || [];
+
+            // Xác định danh sách các cột dựa trên loại bảng
+            const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
+
+            container.innerHTML = columnsList.map(colName => {
+                const members = doiHinh[colName] || [];
                 let rowsHtml = "";
                 for(let i = 0; i < 30; i++) {
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
                     const readonlyAttr = USER_ROLE !== 'admin' ? 'readonly' : '';
+                    
+                    // Thẻ attribute phân biệt cột cho nút Save tìm dữ liệu
+                    const dataAttr = (type === 'phai') ? `data-phai="${colName}"` : `data-team="${colName}"`;
+
                     rowsHtml += `
                         <div class="excel-row-data">
-                            <input type="text" value="${m.ten}" data-team="${teamName}" data-field="ten" class="ex-in p-name" ${readonlyAttr}>
-                            <input type="text" value="${m.idGame}" data-team="${teamName}" data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
-                            <input type="text" value="${m.monPhai}" data-team="${teamName}" data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
+                            <input type="text" value="${m.ten}" ${dataAttr} data-field="ten" class="ex-in p-name" ${readonlyAttr}>
+                            <input type="text" value="${m.idGame}" ${dataAttr} data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
+                            <input type="text" value="${m.monPhai}" ${dataAttr} data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
                         </div>
                     `;
                 }
                 return `<div class="excel-column-block">
-                    <div class="excel-column-header">${teamName}</div>
+                    <div class="excel-column-header">${colName.toUpperCase()}</div>
                     ${rowsHtml}
                 </div>`;
             }).join('');
         }
 
         async function saveTeamExcel(type) {
-            let tempDoiHinh = { "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": [] };
-            TEAMS.forEach(teamName => {
-                const container = document.getElementById(`excel-${type === 'bangchien' ? 'bc' : 'sc'}`);
+            let tempDoiHinh = {};
+            const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
+            let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
+            const container = document.getElementById(containerId);
+
+            columnsList.forEach(colName => {
+                tempDoiHinh[colName] = [];
                 const rows = container.querySelectorAll('.excel-row-data');
                 rows.forEach(row => {
-                    const nameInp = row.querySelector(`[data-team="${teamName}"][data-field="ten"]`);
+                    const queryKey = (type === 'phai') ? `[data-phai="${colName}"][data-field="ten"]` : `[data-team="${colName}"][data-field="ten"]`;
+                    const nameInp = row.querySelector(queryKey);
                     if(nameInp && nameInp.value.trim()) {
-                        const idInp = row.querySelector(`[data-team="${teamName}"][data-field="idGame"]`);
-                        const phaiInp = row.querySelector(`[data-team="${teamName}"][data-field="monPhai"]`);
-                        tempDoiHinh[teamName].push({ ten: nameInp.value.trim(), idGame: idInp.value.trim(), monPhai: phaiInp.value.trim() });
+                        const idKey = (type === 'phai') ? `[data-phai="${colName}"][data-field="idGame"]` : `[data-team="${colName}"][data-field="idGame"]`;
+                        const phaiKey = (type === 'phai') ? `[data-phai="${colName}"][data-field="monPhai"]` : `[data-team="${colName}"][data-field="monPhai"]`;
+                        
+                        const idInp = row.querySelector(idKey);
+                        const phaiInp = row.querySelector(phaiKey);
+                        tempDoiHinh[colName].push({ 
+                            ten: nameInp.value.trim(), 
+                            idGame: idInp.value.trim(), 
+                            monPhai: phaiInp.value.trim() 
+                        });
                     }
                 });
             });
+
             const res = await fetch('/api/save-team-excel', {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({ loai: type, doiHinh: tempDoiHinh })
             });
             if(res.status === 403) return alert("Thất bại: Chỉ Admin mới được lưu!");
-            alert("Đã lưu thành công!");
+            alert("Đã lưu sơ đồ thành công!");
             await loadAllData();
+        }
+
+        async function autoBuildTeam(type) {
+            if(type === 'phai') {
+                let tempDoiHinh = {};
+                MON_PHAI.forEach(p => tempDoiHinh[p] = []);
+                // Quét sổ thành viên gốc và phân loại tự động vào các cột phái
+                (CLIENT_DATA.dsThanhVienBang || []).forEach(m => {
+                    if(tempDoiHinh[m.monPhai]) {
+                        tempDoiHinh[m.monPhai].push({ ten: m.ten, idGame: m.idGame, monPhai: m.monPhai });
+                    }
+                });
+                renderExcelGrid('phai', tempDoiHinh);
+            } else {
+                const mappingType = type === 'bangchien' ? 'dsThamGiaBangChien' : 'dsThamGiaScrim';
+                let tempDoiHinh = {};
+                TEAMS.forEach(t => tempDoiHinh[t] = []);
+                (CLIENT_DATA[mappingType] || []).forEach(m => {
+                    if(tempDoiHinh[m.khuVuc]) {
+                        tempDoiHinh[m.khuVuc].push({ ten: m.ten, idGame: m.idGame, monPhai: m.monPhai });
+                    }
+                });
+                renderExcelGrid(type, tempDoiHinh);
+            }
         }
 
         async function saveBXH(type) {
