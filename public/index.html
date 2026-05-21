@@ -198,59 +198,8 @@
     </div>
 
     <style>
-        .auth-box-panel { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin: 10px; }
-        .auth-input { height: 28px !important; font-size: 11px !important; padding: 2px 5px !important; margin-bottom: 4px; background: rgba(0,0,0,0.3) !important; color:#fff !important; }
-        .bxh-layout-archive { display: grid; grid-template-columns: 320px 260px 1fr; gap: 20px; align-items: start; }
-        .archive-list-wrapper { display: flex; flex-direction: column; gap: 10px; max-height: 550px; overflow-y: auto; }
-        .archive-item-container { position: relative; display: flex; align-items: center; width: 100%; }
-        .archive-item-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding: 12px; padding-right: 40px; border-radius: 6px; text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; }
-        .archive-item-btn:hover { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; }
-        .archive-item-btn.active { background: #f43f5e; color: #fff; border-color: #f43f5e; font-weight: bold; }
-        .archive-item-btn .arch-date { display: block; font-size: 11px; color: #94a3b8; margin-top: 4px; }
-        .btn-delete-match { position: absolute; right: 10px; background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 4px 8px; transition: background 0.2s; }
-        .btn-delete-match:hover { background: rgba(239, 68, 68, 0.2); border-radius: 4px; }
-        /* Style điều khiển ẩn hiện quyền Admin */
-        body.is-guest .admin-only { display: none !important; }
-        /* Đẩy toàn bộ cấu trúc grid layout dàn trải đều ra trang */
-.grid-layout {
-    display: grid;
-    grid-template-columns: 1fr; /* Chuyển sang 1 cột full dòng để bảng chiếm trọn khung hình */
-    gap: 25px;
-    width: 100%;
-    max-width: 1200px; /* Độ rộng tối đa để bảng trải ra vừa vặn, không bị quá loãng */
-    margin: 0 auto; /* Căn toàn bộ nội dung ra chính giữa trang */
-    padding: 10px;
-}
-
-/* Đảm bảo khung chứa card bo tròn bao quanh bảng luôn full 100% */
-.glass-card {
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 20px;
-}
-
-/* Làm cho bảng (Table) trải rộng hết cỡ */
-.table-responsive table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center; /* Căn chữ trong các ô ra chính giữa cho đẹp */
-}
-
-/* Căn giữa tiêu đề cột và các dòng dữ liệu */
-.table-responsive th, .table-responsive td {
-    padding: 12px 15px;
-    text-align: center; 
-    vertical-align: middle;
-}
-
-/* Riêng phần Quản lý / Đăng ký (nếu là Admin) sẽ cho hiển thị gọn gàng phía trên bảng */
-body:not(.is-guest) .grid-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-/* ========================================================
-   CSS SỬA LỖI: TỰ ĐỘNG CÂN GIỮA VÀ TRÀN FULL CHO NGƯỜI XEM
+        /* ========================================================
+   CSS MỚI CHUẨN: TỰ ĐỘNG CÂN GIỮA, TRÀN FULL & HIỆN ĐỦ DỮ LIỆU
    ======================================================== */
 
 /* Khung layout bọc ngoài sử dụng flex wrap linh hoạt */
@@ -275,36 +224,12 @@ body:not(.is-guest) .grid-layout {
     max-width: 100%;
 }
 
-/* KHỐI QUAN TRỌNG: Khung chứa Bảng Vàng giải đấu danh hiệu */
-.display-bxh-archive {
-    flex: 1 1 100%; /* Ép khối này phải chiếm trọn 100% dòng, không ăn chung hàng với ai */
+/* KHỐI QUAN TRỌNG: Khung chứa Bảng Vàng giải đấu luôn chiếm trọn 100% dòng */
+.bxh-layout-archive .display-bxh-archive {
+    flex: 1 1 100% !important; 
     width: 100% !important;
-    margin-top: 15px;
     clear: both;
-}
-
-/* Tinh chỉnh lại bảng dữ liệu vinh danh hiển thị rộng rãi */
-.bxh-table-expanded {
-    width: 100%;
-    border-collapse: collapse;
     margin-top: 10px;
-}
-
-.bxh-table-expanded th {
-    background: rgba(255, 255, 255, 0.08);
-    color: #f43f5e; /* Màu hồng Thánh Vực */
-    font-size: 13px;
-    font-weight: bold;
-    padding: 12px 10px;
-    border-bottom: 2px solid rgba(244, 63, 94, 0.3);
-}
-
-.bxh-table-expanded td {
-    padding: 14px 12px;
-    font-size: 13.5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    text-align: center;
-    vertical-align: middle;
 }
 
 /* Khối bọc từng Đoàn (Đoàn 1, 2, 3) */
@@ -314,18 +239,41 @@ body:not(.is-guest) .grid-layout {
     padding: 20px;
     margin-bottom: 20px;
     border: 1px solid rgba(255, 255, 255, 0.06);
+    width: 100%;
+    box-sizing: border-box;
 }
 
+/* Tiêu đề Đoàn 1, Đoàn 2, Đoàn 3 */
 .doan-title-head {
     font-size: 16px;
     font-weight: bold;
     color: #fda4af;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     text-align: left;
     border-left: 4px solid #f43f5e;
     padding-left: 10px;
 }
 
+/* Ép các hàng thành viên gốc của em dàn ngang rộng ra hết cỡ */
+.bxh-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Căn đều các cột thông số ra hai bên */
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Đảm bảo các cột dữ liệu gốc có khoảng cách đứng rộng rãi, không bị dính chữ */
+.bxh-rank { min-width: 70px; font-weight: bold; }
+.bxh-name { min-width: 130px; }
+.bxh-id { min-width: 110px; }
+.bxh-phai { min-width: 100px; }
+.bxh-stat { min-width: 110px; text-align: center; }
+
+/* Các định dạng bổ trợ khác */
 .badge-rank {
     background: #e11d48;
     color: #fff;
@@ -334,7 +282,6 @@ body:not(.is-guest) .grid-layout {
     font-size: 11px;
     font-weight: bold;
 }
-
 .text-gold { color: #f59e0b !important; font-weight: bold; }
 .text-cyan { color: #06b6d4 !important; }
 .text-red { color: #ef4444 !important; }
@@ -701,30 +648,37 @@ body:not(.is-guest) .grid-layout {
         }
 
         function renderBXHCore(type, bxhList) {
-            const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
-            if(!container) return;
-            const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
-            
-            container.innerHTML = doans.map(doanName => {
-                const players = bxhList.filter(p => p.doan === doanName).sort((a,b) => b.dameNguoi - a.dameNguoi);
-                let rows = players.map((p, idx) => `
-                    <tr>
-                        <td><strong>TOP ${idx+1}</strong></td>
-                        <td class="text-pink"><strong>${p.ten}</strong></td>
-                        <td><code>${p.idGame}</code></td>
-                        <td>${p.monPhai}</td>
-                        <td class="text-gold">${p.dameNguoi.toLocaleString()}</td>
-                        <td>${p.dameTru.toLocaleString()}</td>
-                        <td>${p.mang}</td>
-                        <td class="admin-only"><button class="btn-action-del" style="padding:2px 5px; font-size:11px;" onclick="deleteBXH('${type}', '${p.ten}')">Xóa</button></td>
-                    </tr>
-                `).join('');
-                return `<div class="doan-block-wrapper">
-                    <div class="doan-title-head">${doanName}</div>
-                    <table><tbody>${rows || '<tr><td colspan="8">Trống</td></tr>'}</tbody></table>
-                </div>`;
-            }).join('');
-        }
+    const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
+    if(!container) return;
+    const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
+    
+    container.innerHTML = doans.map(doanName => {
+        const players = bxhList.filter(p => p.doan === doanName).sort((a,b) => b.dameNguoi - a.dameNguoi);
+        let rows = players.map((p, idx) => `
+            <div class="bxh-item">
+                <div class="bxh-rank">TOP ${idx+1}</div>
+                <div class="bxh-name text-pink"><strong>${p.ten}</strong></div>
+                <div class="bxh-id"><code>${p.idGame}</code></div>
+                <div class="bxh-phai text-blue">${p.monPhai}</div>
+                <div class="bxh-stat text-gold">🔥 ${p.dameNguoi.toLocaleString()}</div>
+                <div class="bxh-stat text-cyan">🏰 ${p.dameTru.toLocaleString()}</div>
+                <div class="bxh-stat text-red">⚔️ ${p.mang}</div>
+                <div class="admin-only" style="margin-left:auto;">
+                    <button class="btn-action-del" style="padding:2px 8px; font-size:11px;" onclick="deleteBXH('${type}', '${p.ten}')">Xóa</button>
+                </div>
+            </div>
+        `).join('');
+        
+        return `
+            <div class="doan-block-wrapper">
+                <div class="doan-title-head">${doanName.toUpperCase()}</div>
+                <div class="bxh-list-rows">
+                    ${rows || '<div style="color:#64748b; padding: 10px; text-align:center;">Chưa có dữ liệu thông số của đoàn này.</div>'}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
         window.addEventListener('DOMContentLoaded', async () => {
             applyRoleUI();
