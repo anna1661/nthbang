@@ -352,8 +352,8 @@
     </div>
 
     <script>
-        // SỬA LỖI CHÍ MẠNG: Đổi chính xác từ "Thần Tương" thành "Thần Tướng" khớp 100% database
-        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Thần Tướng", "Toái Mộng", "Tố Vấn", "Huyết Hà", "Long Ngâm"];
+        // SẮP XẾP CHUẨN ĐÉT: Thứ tự 7 phái đúng boong theo thiết kế giao diện ảnh gửi của em
+        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Tố Vấn", "Toái Mộng", "Huyết Hà", "Long Ngâm", "Thần Tướng"];
         const TEAMS = ["Team Mid", "Team Trụ", "Team Def", "Team Vật tư"];
         const CHUC_VU = ["Đại Đương Gia", "Nhị Đương Gia", "Tam Đương Gia", "Sát Đường Chủ", "Tứ Đương Gia", "Ngũ Đương Gia", "Socola Đường Chủ", "Socola Phó Đường Chủ", "Socola Bang Chúng", "Matcha Đường Chủ", "Vani Đường Chủ", "Quân Sư", "Yến Sư", "Mưu Khách", "Nhã Công", "Bang Chúng", "Học Việc"];
         
@@ -648,7 +648,7 @@
             renderBXHCore(type, fullList.filter(p => p.matchName === matchName));
         }
 
-        /* --- SỬA HOÀN TOÀN BIẾN ĐIỀU KIỆN RENDER ĐỘ LẬP KHÔNG LO LỖI TRẮNG Ô --- */
+        /* --- SỬA ĐỘC LẬP TỪNG CHUỖI NHẬN DIỆN KHÔNG LO TRẮNG Ô --- */
         function renderExcelGrid(type, doiHinh) {
             let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
             const container = document.getElementById(containerId);
@@ -664,14 +664,16 @@
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
                     const readonlyAttr = USER_ROLE !== 'admin' ? 'readonly' : '';
                     
-                    // ĐỒNG BỘ: Server cũ nhận diện chung thuộc tính data-team để bóc tách cột dữ liệu
-                    const dataAttr = `data-team="${colName}"`;
+                    // THIẾT LẬP PHÂN BIỆT ĐỘC LẬP THUỘC TÍNH
+                    let attrKey = `data-bc="${colName}"`;
+                    if (type === 'scrim') attrKey = `data-sc="${colName}"`;
+                    if (type === 'phai') attrKey = `data-phai="${colName}"`;
 
                     rowsHtml += `
                         <div class="excel-row-data">
-                            <input type="text" value="${m.ten || ''}" ${dataAttr} data-field="ten" class="ex-in p-name" ${readonlyAttr}>
-                            <input type="text" value="${m.idGame || ''}" ${dataAttr} data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
-                            <input type="text" value="${m.monPhai || ''}" ${dataAttr} data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
+                            <input type="text" value="${m.ten || ''}" ${attrKey} data-field="ten" class="ex-in p-name" ${readonlyAttr}>
+                            <input type="text" value="${m.idGame || ''}" ${attrKey} data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
+                            <input type="text" value="${m.monPhai || ''}" ${attrKey} data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
                         </div>
                     `;
                 }
@@ -688,16 +690,19 @@
             let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
             const container = document.getElementById(containerId);
 
+            let attrName = "data-bc";
+            if (type === 'scrim') attrName = "data-sc";
+            if (type === 'phai') attrName = "data-phai";
+
             columnsList.forEach(colName => {
                 tempDoiHinh[colName] = [];
-                // Quét chính xác khối dữ liệu input nằm trong panel chỉ định
-                const nameInputs = container.querySelectorAll(`input[data-team="${colName}"][data-field="ten"]`);
+                const nameInputs = container.querySelectorAll(`input[${attrName}="${colName}"][data-field="ten"]`);
                 
                 nameInputs.forEach((nameInp) => {
                     if(nameInp && nameInp.value.trim()) {
                         const parentRow = nameInp.closest('.excel-row-data');
-                        const idInp = parentRow.querySelector(`input[data-team="${colName}"][data-field="idGame"]`);
-                        const phaiInp = parentRow.querySelector(`input[data-team="${colName}"][data-field="monPhai"]`);
+                        const idInp = parentRow.querySelector(`input[${attrName}="${colName}"][data-field="idGame"]`);
+                        const phaiInp = parentRow.querySelector(`input[${attrName}="${colName}"][data-field="monPhai"]`);
                         
                         tempDoiHinh[colName].push({ 
                             ten: nameInp.value.trim(), 
@@ -722,6 +727,7 @@
             if(type === 'phai') {
                 let tempDoiHinh = {};
                 MON_PHAI.forEach(p => tempDoiHinh[p] = []);
+                // Lọc tự động nạp chính xác từ danh sách tổng
                 (CLIENT_DATA.dsThanhVienBang || []).forEach(m => {
                     if(tempDoiHinh[m.monPhai]) {
                         tempDoiHinh[m.monPhai].push({ ten: m.ten, idGame: m.idGame, monPhai: m.monPhai });
