@@ -17,6 +17,7 @@
             <nav class="menu-nav">
                 <button class="menu-btn active" onclick="switchMainTab('bangchien')">🛡️ BANG CHIẾN</button>
                 <button class="menu-btn" onclick="switchMainTab('scrim')">⚔️ THAM GIA SCRIM</button>
+                <button class="menu-btn" onclick="switchMainTab('thanhvien')">👥 THÀNH VIÊN BANG</button>
             </nav>
             <div class="sidebar-footer">Đang đăng nhập: <strong>BTV</strong></div>
         </aside>
@@ -43,6 +44,8 @@
                                 <select id="bc-phai" class="form-control"></select>
                                 <label>ĐỘI HÌNH DỰ KIẾN</label>
                                 <select id="bc-team" class="form-control"></select>
+                                <label>GHI CHÚ ĐỘI HÌNH</label>
+                                <input type="text" id="bc-note" class="form-control" placeholder="Ví dụ: Đơm trụ lẻ, đi bọc sườn...">
                                 <button class="btn btn-primary" onclick="register('bangchien')">Ghi danh sơ đồ</button>
                             </div>
                         </div>
@@ -51,7 +54,7 @@
                             <div class="table-responsive">
                                 <table>
                                     <thead>
-                                        <tr><th>Tên nhân vật</th><th>ID Game</th><th>Môn Phái</th><th>Đội hình</th><th>Hành động</th></tr>
+                                        <tr><th>Tên nhân vật</th><th>ID Game</th><th>Môn Phái</th><th>Đội hình</th><th>Ghi chú</th><th>Hành động</th></tr>
                                     </thead>
                                     <tbody id="tbl-bc-ds"></tbody>
                                 </table>
@@ -69,9 +72,13 @@
                 </div>
 
                 <div id="bc-bxh" class="sub-tab-content">
-                    <div class="bxh-layout">
+                    <div class="bxh-layout-archive">
                         <div class="glass-card form-bxh">
-                            <h3>NHẬP THÀNH TÍCH TRẬN ĐẤU</h3>
+                            <h3>LƯU THÀNH TÍCH TRẬN MỚI</h3>
+                            <div style="background: rgba(244, 63, 94, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+                                <label style="color:#f43f5e; font-weight:bold; margin-bottom: 2px;">TÊN TRẬN TRẬN ĐẤU HIỆN TẠI</label>
+                                <input type="text" id="bc-bxh-matchname" class="form-control" placeholder="Ví dụ: BC vs Kim Phong Thứ 5">
+                            </div>
                             <label>Tên nhân vật</label><input type="text" id="bc-bxh-name" class="form-control">
                             <label>ID Game</label><input type="text" id="bc-bxh-id" class="form-control">
                             <label>Môn Phái</label><select id="bc-bxh-phai" class="form-control"></select>
@@ -84,8 +91,15 @@
                             <label>Số Mạng Hạ Gục</label><input type="number" id="bc-bxh-m" class="form-control" value="0">
                             <button class="btn btn-primary" onclick="saveBXH('bangchien')">Cập nhật bảng vàng</button>
                         </div>
-                        <div class="glass-card display-bxh">
-                            <h3>BẢNG VINH DANH THÀNH TÍCH CHIẾN TRƯỜNG</h3>
+
+                        <div class="glass-card archive-sidebar">
+                            <h3>LỊCH SỬ TRẬN ĐẤU</h3>
+                            <div id="bc-archive-list" class="archive-list-wrapper">
+                                </div>
+                        </div>
+
+                        <div class="glass-card display-bxh-archive">
+                            <h3 id="bc-archive-title">BẢNG VINH DANH THÀNH TÍCH (CHƯA CHỌN TRẬN)</h3>
                             <div class="bxh-wrapper" id="bxh-container-bc"></div>
                         </div>
                     </div>
@@ -112,6 +126,8 @@
                                 <select id="sc-phai" class="form-control"></select>
                                 <label>ĐỘI HÌNH DỰ KIẾN</label>
                                 <select id="sc-team" class="form-control"></select>
+                                <label>GHI CHÚ ĐỘI HÌNH</label>
+                                <input type="text" id="sc-note" class="form-control" placeholder="Ví dụ: Ôm buff, áp sát thủ mục tiêu...">
                                 <button class="btn btn-primary" onclick="register('scrim')">Ghi danh đấu tập</button>
                             </div>
                         </div>
@@ -120,7 +136,7 @@
                             <div class="table-responsive">
                                 <table>
                                     <thead>
-                                        <tr><th>Tên nhân vật</th><th>ID Game</th><th>Môn Phái</th><th>Đội hình</th><th>Hành động</th></tr>
+                                        <tr><th>Tên nhân vật</th><th>ID Game</th><th>Môn Phái</th><th>Đội hình</th><th>Ghi chú</th><th>Hành động</th></tr>
                                     </thead>
                                     <tbody id="tbl-sc-ds"></tbody>
                                 </table>
@@ -138,9 +154,13 @@
                 </div>
 
                 <div id="sc-bxh" class="sub-tab-content">
-                    <div class="bxh-layout">
+                    <div class="bxh-layout-archive">
                         <div class="glass-card form-bxh">
-                            <h3>NHẬP THÀNH TÍCH ĐẤU TẬP</h3>
+                            <h3>NHẬP THÀNH TÍCH ĐẤU TẬP MỚI</h3>
+                            <div style="background: rgba(34, 197, 94, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+                                <label style="color:#22c55e; font-weight:bold; margin-bottom: 2px;">TÊN TRẬN SCRIM HIỆN TẠI</label>
+                                <input type="text" id="sc-bxh-matchname" class="form-control" placeholder="Ví dụ: Scrim với Ngạo Thế Trận 1">
+                            </div>
                             <label>Tên nhân vật</label><input type="text" id="sc-bxh-name" class="form-control">
                             <label>ID Game</label><input type="text" id="sc-bxh-id" class="form-control">
                             <label>Môn Phái</label><select id="sc-bxh-phai" class="form-control"></select>
@@ -153,9 +173,52 @@
                             <label>Số Mạng Hạ Gục</label><input type="number" id="sc-bxh-m" class="form-control" value="0">
                             <button class="btn btn-primary" onclick="saveBXH('scrim')">Cập nhật bảng vàng</button>
                         </div>
-                        <div class="glass-card display-bxh">
-                            <h3>BẢNG VINH DANH THÀNH TÍCH SCRIM</h3>
+
+                        <div class="glass-card archive-sidebar">
+                            <h3>LỊCH SỬ ĐẤU TẬP</h3>
+                            <div id="sc-archive-list" class="archive-list-wrapper"></div>
+                        </div>
+
+                        <div class="glass-card display-bxh-archive">
+                            <h3 id="sc-archive-title">BẢNG VINH DANH THÀNH TÍCH (CHƯA CHỌN TRẬN)</h3>
                             <div class="bxh-wrapper" id="bxh-container-sc"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="main-thanhvien" class="main-tab-pane">
+                <div class="sub-tab-bar">
+                    <button class="sub-btn active">📑 Toàn Bộ Thành Viên Bang Hội</button>
+                </div>
+                <div class="sub-tab-content active">
+                    <div class="grid-layout">
+                        <div class="glass-card">
+                            <h3>QUẢN LÝ THÀNH VIÊN BANG</h3>
+                            <div class="form-group">
+                                <label>TÊN THÀNH VIÊN</label>
+                                <input type="text" id="tv-name" class="form-control" placeholder="Nhập tên ingame...">
+                                <label>ID GAME</label>
+                                <input type="text" id="tv-id" class="form-control" placeholder="Ví dụ: 0001">
+                                <label>MÔN PHÁI</label>
+                                <select id="tv-phai" class="form-control"></select>
+                                <label>CHỨC VỤ BANG HỘI</label>
+                                <select id="tv-chucvu" class="form-control"></select>
+                                <label>GHI CHÚ / THÔNG TIN RIÊNG</label>
+                                <input type="text" id="tv-note" class="form-control" placeholder="Nhập ghi chú cá nhân thành viên...">
+                                <button class="btn btn-primary" onclick="registerGuildMember()">Thêm vào sổ bang</button>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3>SỔ PHẢ HỆ THÀNH VIÊN THÁNH VỰC</h3>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr><th>Tên thành viên</th><th>ID Game</th><th>Môn Phái</th><th>Chức vụ</th><th>Ghi chú</th><th>Hành động</th></tr>
+                                    </thead>
+                                    <tbody id="tbl-tv-ds"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -164,14 +227,68 @@
         </main>
     </div>
 
-    <script>
-        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Toái Mộng", "Huyết Hà", "Thần Tương", "Long Ngâm", "Tố Vấn"];
-        const TEAMS = ["Team Mid", "Team Trụ", "Team Def", "Team Vật tư"];
-        let CLIENT_DATA = {};
+    <style>
+        .bxh-layout-archive {
+            display: grid;
+            grid-template-columns: 320px 250px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .archive-list-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .archive-item-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .archive-item-btn:hover {
+            background: rgba(244, 63, 94, 0.15);
+            border-color: #f43f5e;
+        }
+        .archive-item-btn.active {
+            background: #f43f5e;
+            color: #fff;
+            border-color: #f43f5e;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+        }
+        .archive-item-btn .arch-date {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .archive-item-btn.active .arch-date {
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
 
-        // Khởi tạo các ô lựa chọn môn phái động dựa theo mảng chuẩn cấu hình
+    <script>
+        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Toái Mộng", "Huyết Hà", "Thần Tương", "Long Ngâm", "Tố Vấn", "Thần Y"];
+        const TEAMS = ["Team Mid", "Team Trụ", "Team Def", "Team Vật tư"];
+        const CHUC_VU = [
+            "Đại Đương Gia", "Nhị Đương Gia", "Tam Đương Gia", "Tứ Đương Gia", 
+            "Sát Đường Chủ", "Matcha Đường Chủ", "Socola Đương Gia", "Vani Đường chủ", 
+            "Yến Sư", "Quân Sư", "Mưu Khách", "Nhã Công", "Bang Chúng", "Học Việc"
+        ];
+        
+        let CLIENT_DATA = {};
+        let CURRENT_SELECTED_MATCH_BC = "";
+        let CURRENT_SELECTED_MATCH_SC = "";
+
         function initDropdowns() {
-            ['bc-phai', 'sc-phai', 'bc-bxh-phai', 'sc-bxh-phai'].forEach(id => {
+            ['bc-phai', 'sc-phai', 'bc-bxh-phai', 'sc-bxh-phai', 'tv-phai'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.innerHTML = MON_PHAI.map(p => `<option value="${p}">${p}</option>`).join('');
             });
@@ -179,9 +296,10 @@
                 const el = document.getElementById(id);
                 if(el) el.innerHTML = TEAMS.map(t => `<option value="${t}">${t}</option>`).join('');
             });
+            const tvChucVu = document.getElementById('tv-chucvu');
+            if(tvChucVu) tvChucVu.innerHTML = CHUC_VU.map(cv => `<option value="${cv}">${cv}</option>`).join('');
         }
 
-        // Chuyển đổi qua lại giữa 2 tính năng chính: Bang Chiến và Scrim
         function switchMainTab(tab) {
             document.querySelectorAll('.main-tab-pane').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
@@ -189,7 +307,6 @@
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
         }
 
-        // Điều khiển chuyển đổi các phân hệ nội bộ (Đăng ký, Chia đội hình, BXH)
         function switchSubTab(prefix, tab) {
             const parent = document.getElementById('main-' + (prefix === 'bc' ? 'bangchien' : 'scrim'));
             if(!parent) return;
@@ -199,23 +316,26 @@
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
         }
 
-        // Tải toàn bộ cơ sở dữ liệu thời gian thực từ API node server
         async function loadAllData() {
             try {
                 const res = await fetch('/api/all-data');
                 CLIENT_DATA = await res.json();
+                
                 renderRegisterTable('bangchien', CLIENT_DATA.dsThamGiaBangChien || []);
                 renderRegisterTable('scrim', CLIENT_DATA.dsThamGiaScrim || []);
+                renderGuildMemberTable(CLIENT_DATA.dsThanhVienBang || []);
+                
                 renderExcelGrid('bangchien', CLIENT_DATA.doiHinhBangChien || {});
                 renderExcelGrid('scrim', CLIENT_DATA.doiHinhScrim || {});
-                renderBXH('bangchien', CLIENT_DATA.bxhBangChien || []);
-                renderBXH('scrim', CLIENT_DATA.bxhScrim || []);
+                
+                // Khởi tạo danh sách lưu trữ cột giữa
+                buildArchiveSidebar('bangchien', CLIENT_DATA.bxhBangChien || []);
+                buildArchiveSidebar('scrim', CLIENT_DATA.bxhScrim || []);
             } catch (error) {
                 console.error("Lỗi lấy dữ liệu hệ thống:", error);
             }
         }
 
-        // Đổ dữ liệu vào bảng danh sách tổng tham gia chiến trường
         function renderRegisterTable(type, list) {
             const tbody = document.getElementById(`tbl-${type === 'bangchien' ? 'bc' : 'sc'}-ds`);
             if(!tbody) return;
@@ -225,28 +345,126 @@
                     <td><code>${p.idGame}</code></td>
                     <td class="text-blue">${p.monPhai}</td>
                     <td><span class="badge-team">${p.khuVuc}</span></td>
+                    <td style="color: #94a3b8; font-size: 13px;">${p.ghiChu || ''}</td>
                     <td><button class="btn-action-del" onclick="deletePlayer('${type}', '${p.ten}')">Xóa</button></td>
                 </tr>
             `).join('');
         }
 
-        // Xử lý gửi thông tin ghi danh lên API hệ thống
+        function renderGuildMemberTable(list) {
+            const tbody = document.getElementById('tbl-tv-ds');
+            if(!tbody) return;
+            tbody.innerHTML = list.map(p => `
+                <tr>
+                    <td class="text-pink"><strong>${p.ten}</strong></td>
+                    <td><code>${p.idGame}</code></td>
+                    <td class="text-blue">${p.monPhai}</td>
+                    <td><span class="badge-team" style="background:#0284c7;">${p.chucVu}</span></td>
+                    <td style="color: #94a3b8; font-size: 13px;">${p.ghiChu || ''}</td>
+                    <td><button class="btn-action-del" onclick="deleteGuildMember('${p.ten}')">Xóa</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // TỰ ĐỘNG GOM CÁC TRẬN ĐÃ LƯU TRÊN DB THÀNH DANH SÁCH LƯU TRỮ ĐỂ CLICK
+        function buildArchiveSidebar(type, bxhList) {
+            const pre = type === 'bangchien' ? 'bc' : 'sc';
+            const container = document.getElementById(`${pre}-archive-list`);
+            if(!container) return;
+
+            // Lọc ra danh sách các tên trận đấu duy nhất (Unique Match Names)
+            const uniqueMatches = [];
+            const map = new Map();
+            for (const item of bxhList) {
+                if(item.matchName && !map.has(item.matchName)){
+                    map.set(item.matchName, true);
+                    uniqueMatches.push({
+                        name: item.matchName,
+                        date: item.createdAt || new Date().toLocaleDateString('vi-VN')
+                    });
+                }
+            }
+
+            if(uniqueMatches.length === 0) {
+                container.innerHTML = `<div style="color:#64748b; font-size:12px; text-align:center; padding:20px;">Chưa có trận nào được lưu.</div>`;
+                return;
+            }
+
+            // Chọn mặc định trận đầu tiên nếu chưa chọn trận nào
+            if(type === 'bangchien' && !CURRENT_SELECTED_MATCH_BC) CURRENT_SELECTED_MATCH_BC = uniqueMatches[0].name;
+            if(type === 'scrim' && !CURRENT_SELECTED_MATCH_SC) CURRENT_SELECTED_MATCH_SC = uniqueMatches[0].name;
+
+            const currentActive = type === 'bangchien' ? CURRENT_SELECTED_MATCH_BC : CURRENT_SELECTED_MATCH_SC;
+
+            container.innerHTML = uniqueMatches.map(m => {
+                const activeClass = m.name === currentActive ? 'active' : '';
+                return `
+                    <button class="archive-item-btn ${activeClass}" onclick="selectArchiveMatch('${type}', '${m.name}')">
+                        🎯 ${m.name}
+                        <span class="arch-date">📅 Ngày lưu: ${m.date}</span>
+                    </button>
+                `;
+            }).join('');
+
+            // Chạy hàm hiển thị dữ liệu cho trận đang active
+            displayMatchBXH(type, currentActive, bxhList);
+        }
+
+        function selectArchiveMatch(type, matchName) {
+            if(type === 'bangchien') CURRENT_SELECTED_MATCH_BC = matchName;
+            else CURRENT_SELECTED_MATCH_SC = matchName;
+            
+            const fullList = type === 'bangchien' ? (CLIENT_DATA.bxhBangChien || []) : (CLIENT_DATA.bxhScrim || []);
+            buildArchiveSidebar(type, fullList);
+        }
+
+        function displayMatchBXH(type, matchName, fullList) {
+            const pre = type === 'bangchien' ? 'bc' : 'sc';
+            const titleEl = document.getElementById(`${pre}-archive-title`);
+            if(titleEl) titleEl.innerText = `🏆 BẢNG VÀNG: ${matchName.toUpperCase()}`;
+
+            const filteredData = fullList.filter(p => p.matchName === matchName);
+            renderBXHCore(type, filteredData);
+        }
+
         async function register(type) {
             const pre = type === 'bangchien' ? 'bc' : 'sc';
             const ten = document.getElementById(`${pre}-name`).value.trim();
             const idGame = document.getElementById(`${pre}-id`).value.trim();
             const monPhai = document.getElementById(`${pre}-phai`).value;
             const khuVuc = document.getElementById(`${pre}-team`).value;
+            const ghiChu = document.getElementById(`${pre}-note`).value.trim();
 
             if(!ten || !idGame) return alert("Em vui lòng điền đầy đủ Tên và ID Nhân vật nhé!");
 
             await fetch('/api/register', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ loai: type, ten, idGame, monPhai, khuVuc })
+                body: JSON.stringify({ loai: type, ten, idGame, monPhai, khuVuc, ghiChu })
             });
             document.getElementById(`${pre}-name`).value = "";
             document.getElementById(`${pre}-id`).value = "";
+            document.getElementById(`${pre}-note`).value = "";
+            await loadAllData();
+        }
+
+        async function registerGuildMember() {
+            const ten = document.getElementById('tv-name').value.trim();
+            const idGame = document.getElementById('tv-id').value.trim();
+            const monPhai = document.getElementById('tv-phai').value;
+            const chucVu = document.getElementById('tv-chucvu').value;
+            const ghiChu = document.getElementById('tv-note').value.trim();
+
+            if(!ten || !idGame) return alert("Em điền đầy đủ Tên và ID Thành viên bang nhé!");
+
+            await fetch('/api/register-member', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ ten, idGame, monPhai, chucVu, ghiChu })
+            });
+            document.getElementById('tv-name').value = "";
+            document.getElementById('tv-id').value = "";
+            document.getElementById('tv-note').value = "";
             await loadAllData();
         }
 
@@ -260,14 +478,23 @@
             await loadAllData();
         }
 
-        // Dựng giao diện mô phỏng bảng tính Excel phân chia đội hình chiến thuật
+        async function deleteGuildMember(ten) {
+            if(!confirm(`Xóa thành viên [${ten}] ra khỏi danh sách bang hội?`)) return;
+            await fetch('/api/delete-member', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ ten })
+            });
+            await loadAllData();
+        }
+
         function renderExcelGrid(type, doiHinh) {
             const container = document.getElementById(`excel-${type === 'bangchien' ? 'bc' : 'sc'}`);
             if(!container) return;
             container.innerHTML = TEAMS.map(teamName => {
                 const members = doiHinh[teamName] || [];
                 let rowsHtml = "";
-                for(let i = 0; i < 15; i++) {
+                for(let i = 0; i < 30; i++) {
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
                     rowsHtml += `
                         <div class="excel-row-data">
@@ -278,7 +505,7 @@
                     `;
                 }
                 return `
-                    <div class="excel-column-block">
+                    <div class="excel-column-block" style="min-width: 260px;">
                         <div class="excel-column-header">${teamName.toUpperCase()}</div>
                         <div class="excel-sub-header-row">
                             <span>Tên</span><span>ID</span><span>Phái</span>
@@ -289,14 +516,13 @@
             }).join('');
         }
 
-        // Thuật toán quét và tự động phân bổ người từ danh sách tổng vào các cột Excel tương ứng
         function autoBuildTeam(type) {
             const sourceList = type === 'bangchien' ? CLIENT_DATA.dsThamGiaBangChien : CLIENT_DATA.dsThamGiaScrim;
             let tempDoiHinh = { "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": [] };
             
             if(sourceList) {
                 sourceList.forEach(p => {
-                    if (tempDoiHinh[p.khuVuc] && tempDoiHinh[p.khuVuc].length < 15) {
+                    if (tempDoiHinh[p.khuVuc] && tempDoiHinh[p.khuVuc].length < 30) {
                         tempDoiHinh[p.khuVuc].push({ ten: p.ten, idGame: p.idGame, monPhai: p.monPhai });
                     }
                 });
@@ -304,7 +530,6 @@
             renderExcelGrid(type, tempDoiHinh);
         }
 
-        // Thu thập các ô Input từ lưới Excel để lưu trữ vào Backend
         async function saveTeamExcel(type) {
             const gridId = `excel-${type === 'bangchien' ? 'bc' : 'sc'}`;
             const container = document.getElementById(gridId);
@@ -338,22 +563,23 @@
             await loadAllData();
         }
 
-        // FIXED: Xử lý lưu kết quả thông số trận đấu vào Bảng xếp hạng chuẩn hóa dữ liệu số
+        // TỰ ĐỘNG ĐỂ HỆ THỐNG LƯU TRẬN THEO TÊN TRẬN DO EM ĐẶT
         async function saveBXH(type) {
             const pre = type === 'bangchien' ? 'bc' : 'sc';
+            const matchName = document.getElementById(`${pre}-bxh-matchname`).value.trim();
             const ten = document.getElementById(`${pre}-bxh-name`).value.trim();
             const idGame = document.getElementById(`${pre}-bxh-id`).value.trim();
             const monPhai = document.getElementById(`${pre}-bxh-phai`).value;
             const doan = document.getElementById(`${pre}-bxh-doan`).value;
             
-            // Quy đổi dữ liệu số an toàn bằng toán tử cộng (+) để tránh rỗng chuỗi
             const dameNguoi = Number(document.getElementById(`${pre}-bxh-dn`).value) || 0;
             const dameTru = Number(document.getElementById(`${pre}-bxh-dt`).value) || 0;
             const mang = Number(document.getElementById(`${pre}-bxh-m`).value) || 0;
 
+            if(!matchName) return alert("Em vui lòng nhập Tên Trận Hiện Tại trước khi cập nhật điểm nha!");
             if(!ten) return alert("Vui lòng điền tên người chơi để tính điểm!");
 
-            const record = { ten, idGame, monPhai, doan, dameNguoi, dameTru, mang };
+            const record = { matchName, ten, idGame, monPhai, doan, dameNguoi, dameTru, mang };
 
             await fetch('/api/save-bxh', {
                 method: 'POST',
@@ -361,19 +587,21 @@
                 body: JSON.stringify({ loai: type, record })
             });
             
-            // Xóa dữ liệu chữ và reset các ô nhập số về 0 chuẩn form
             document.getElementById(`${pre}-bxh-name`).value = "";
             document.getElementById(`${pre}-bxh-id`).value = "";
             document.getElementById(`${pre}-bxh-dn`).value = 0;
             document.getElementById(`${pre}-bxh-dt`).value = 0;
             document.getElementById(`${pre}-bxh-m`).value = 0;
             
+            // Đồng bộ tên trận hiện tại sang biến tạm để giữ vị trí màn hình hiển thị ngay trận đó
+            if(type === 'bangchien') CURRENT_SELECTED_MATCH_BC = matchName;
+            else CURRENT_SELECTED_MATCH_SC = matchName;
+
             await loadAllData();
         }
 
-        // THÊM MỚI: Hàm gửi yêu cầu xóa dòng dữ liệu lỗi lên API Backend
         async function deleteBXH(type, ten) {
-            if(!confirm(`Em có chắc chắn muốn xóa dữ liệu của [${ten}] khỏi Bảng Vàng không?`)) return;
+            if(!confirm(`Em có chắc chắn muốn xóa dòng dữ liệu thành tích này không?`)) return;
             await fetch('/api/delete-bxh', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -382,8 +610,7 @@
             await loadAllData();
         }
 
-        // FIXED: Xuất dữ liệu BXH theo cấu trúc 3 Đoàn và tích hợp thêm nút Xóa
-        function renderBXH(type, bxhList) {
+        function renderBXHCore(type, bxhList) {
             const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
             if(!container) return;
             const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
@@ -407,7 +634,7 @@
                 `).join('');
 
                 if(playersInDoan.length === 0) {
-                    rows = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding: 10px;">Chưa có dữ liệu thông số của đoàn này.</td></tr>`;
+                    rows = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding: 10px;">Chưa có dữ liệu thành tích của đoàn này trong trận.</td></tr>`;
                 }
 
                 return `
@@ -424,7 +651,6 @@
             }).join('');
         }
 
-        // Tối ưu hóa quá trình chạy bất đồng bộ khi load trang
         window.addEventListener('DOMContentLoaded', async () => {
             initDropdowns();
             await loadAllData();
