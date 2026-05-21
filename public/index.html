@@ -462,7 +462,6 @@
             if(targetContent) targetContent.classList.add('active');
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
 
-            // Nếu người dùng bấm tab phái, tự động tạo lưới trống hoặc hiển thị dữ liệu
             if(prefix === 'tv' && tab === 'phai') {
                 renderExcelGrid('phai', CLIENT_DATA.doiHinhPhai || {});
             }
@@ -648,13 +647,12 @@
             renderBXHCore(type, fullList.filter(p => p.matchName === matchName));
         }
 
-        /* HỆ THỐNG PHÁT TRIỂN LƯỚI EXCEL CHO CẢ BA LOẠI TAB (BANG CHIẾN, SCRIM, PHAI) */
+        /* --- SỬA ĐỔI HÀM TÁCH BIỆT RENDER THEO ĐÚNG THUỘC TÍNH GỐC CỦA EM --- */
         function renderExcelGrid(type, doiHinh) {
             let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
             const container = document.getElementById(containerId);
             if(!container) return;
 
-            // Xác định danh sách các cột dựa trên loại bảng
             const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
 
             container.innerHTML = columnsList.map(colName => {
@@ -664,7 +662,7 @@
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
                     const readonlyAttr = USER_ROLE !== 'admin' ? 'readonly' : '';
                     
-                    // Thẻ attribute phân biệt cột cho nút Save tìm dữ liệu
+                    // SỬA QUAN TRỌNG: Bang chiến/scrim phải giữ nguyên attribute `data-team` gốc của em để backend ko lỗi ô trắng!
                     const dataAttr = (type === 'phai') ? `data-phai="${colName}"` : `data-team="${colName}"`;
 
                     rowsHtml += `
@@ -723,7 +721,6 @@
             if(type === 'phai') {
                 let tempDoiHinh = {};
                 MON_PHAI.forEach(p => tempDoiHinh[p] = []);
-                // Quét sổ thành viên gốc và phân loại tự động vào các cột phái
                 (CLIENT_DATA.dsThanhVienBang || []).forEach(m => {
                     if(tempDoiHinh[m.monPhai]) {
                         tempDoiHinh[m.monPhai].push({ ten: m.ten, idGame: m.idGame, monPhai: m.monPhai });
