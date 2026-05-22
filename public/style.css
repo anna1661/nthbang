@@ -1,271 +1,395 @@
-/* CẤU HÌNH CHUNG TOÀN TRANG WEB */
+/* ==========================================================================
+   1. CẤU HÌNH HỆ THỐNG & NỀN PASTEL CỔ TRANG (GLASSMORPHISM)
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920');
+    /* Đổi nền sử dụng đúng ảnh phong cảnh núi non kiếm hiệp hoa đào của em */
+    background: #0d111a url('https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1920') no-repeat center center fixed;
     background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    color: #ffffff;
+    color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     height: 100vh;
     overflow: hidden;
 }
 
-.container {
+/* KHUNG CONTAINER CHẤT LIỆU KÍNH LAI ĐIỆN TỬ XANH HỒNG */
+.app-container {
     display: flex;
     height: 100vh;
+    background: linear-gradient(135deg, rgba(244, 143, 177, 0.15), rgba(129, 212, 250, 0.15));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
-/* GIAO DIỆN THANH MENU TRÁI (SIDEBAR) */
+/* ==========================================================================
+   2. THANH SIDEBAR TRÁI (MENU ĐIỀU HƯỚNG CHÍNH)
+   ========================================================================== */
 .sidebar {
-    width: 280px;
-    background-color: rgba(21, 23, 30, 0.85);
-    backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    width: 260px;
+    background: rgba(15, 23, 42, 0.85);
+    border-right: 1px solid rgba(244, 143, 177, 0.3);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    padding: 25px 15px;
 }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 30px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.guild-brand {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-/* Đổi logo tròn thành chữ 杀 màu đỏ rực */
-.bang-logo {
-    width: 55px;
-    height: 55px;
-    background-color: #12141a;
-    border: 2px solid #ff4655;
+.brand-logo {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #f48fb1, #81d4fa);
     border-radius: 50%;
-    color: #ff4655;
-    font-size: 28px;
+    margin: 0 auto;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 70px;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(244, 143, 177, 0.4);
+}
+
+.brand-name {
+    margin-top: 15px;
     font-weight: bold;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #f48fb1, #81d4fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.menu-nav {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 15px rgba(255, 70, 85, 0.4);
-}
-
-.bang-name h2 {
-    font-size: 18px;
-    letter-spacing: 1.5px;
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.menu-items {
-    padding: 20px 15px;
-    flex-grow: 1;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .menu-btn {
-    width: 100%;
-    padding: 14px;
-    background: none;
-    border: none;
-    color: #b3b3b3;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    padding: 14px 20px;
     text-align: left;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: 12px;
+    font-weight: bold;
     cursor: pointer;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .menu-btn:hover, .menu-btn.active {
-    background-color: rgba(255, 70, 85, 0.15);
-    color: #ff4655;
-    border-left: 4px solid #ff4655;
-    padding-left: 10px;
+    background: linear-gradient(135deg, rgba(244, 143, 177, 0.4), rgba(129, 212, 250, 0.4));
+    color: #fff;
+    border-color: #f48fb1;
+    box-shadow: 0 8px 24px rgba(244, 143, 177, 0.25);
+    transform: translateY(-2px);
 }
 
 .sidebar-footer {
-    padding: 20px;
-    font-size: 13px;
-    color: #888;
-    background-color: rgba(10, 11, 15, 0.5);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: auto;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.user-highlight {
-    color: #ff4655;
-    font-weight: bold;
-}
-
-/* GIAO DIỆN VÙNG NỘI DUNG CHÍNH */
+/* ==========================================================================
+   3. KHU VỰC HIỂN THỊ NỘI DUNG CHÍNH & TAB CON
+   ========================================================================== */
 .main-content {
-    flex-grow: 1;
-    padding: 30px;
+    flex: 1;
+    padding: 25px;
     overflow-y: auto;
 }
 
-.tabs-header {
+.main-tab-pane { display: none; }
+.main-tab-pane.active { display: block; }
+.sub-tab-content { display: none; }
+.sub-tab-content.active { display: block; }
+
+/* THANH CHUYỂN SUB-TAB (1. Danh sách, 2. Xếp Đội Hình, 3. Bảng Xếp Hạng) */
+.sub-tab-bar {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 10px;
-}
-
-.tab-link {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cccccc;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.tab-link:hover, .tab-link.active {
-    background-color: #ff4655;
-    color: white;
-    border-color: #ff4655;
-}
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 30px;
-}
-
-.card {
-    background-color: rgba(26, 29, 38, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.6);
+    padding: 6px;
     border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    width: fit-content;
 }
 
-.card h3 {
+.sub-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.sub-btn.active, .sub-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* ==========================================================================
+   4. PHONG CÁCH CÁC THÀNH PHẦN KHỐI (GLASSMORPHISM CARD)
+   ========================================================================== */
+.glass-card {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(244, 143, 177, 0.15);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card h3 {
     font-size: 16px;
-    letter-spacing: 1px;
     margin-bottom: 20px;
-    color: #ff4655;
-    border-left: 3px solid #ff4655;
+    border-left: 4px solid #f48fb1;
     padding-left: 10px;
-}
-
-/* ĐỊNH DẠNG FORM NHẬP */
-.form-group {
-    margin-bottom: 18px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 12px;
-    color: #aaa;
-    margin-bottom: 8px;
+    color: #f1f5f9;
     letter-spacing: 0.5px;
 }
 
-.form-group input, .form-group select {
+.grid-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 25px;
+}
+
+/* Ô NHẬP LIỆU FORM */
+.form-control {
     width: 100%;
-    padding: 12px;
-    background-color: rgba(18, 20, 26, 0.8);
+    background: rgba(15, 23, 42, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    color: white;
-    font-size: 14px;
+    color: #fff;
+    padding: 11px 14px;
+    border-radius: 8px;
+    margin-top: 6px;
+    margin-bottom: 18px;
     outline: none;
+    transition: 0.2s;
 }
 
-.form-group input:focus, .form-group select:focus {
-    border-color: #ff4655;
+.form-control:focus {
+    border-color: #81d4fa;
+    box-shadow: 0 0 10px rgba(129, 212, 250, 0.2);
 }
 
-.submit-btn {
-    width: 100%;
-    padding: 14px;
-    background-color: #ff4655;
+label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}
+
+/* NÚT BẤM PASTEL TỔNG HỢP */
+.btn {
     border: none;
-    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
     font-weight: bold;
-    font-size: 15px;
-    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: 0.2s;
 }
 
-.submit-btn:hover {
-    background-color: #e03e4b;
+.btn-primary {
+    background: linear-gradient(135deg, #f48fb1, #d81b60);
+    color: #fff;
 }
 
-/* ĐỊNH DẠNG BẢNG DANH SÁCH THÀNH VIÊN */
+.btn-primary:hover {
+    box-shadow: 0 0 15px rgba(244, 143, 177, 0.5);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #81d4fa, #0288d1);
+    color: #fff;
+}
+
+/* ==========================================================================
+   5. THIẾT KẾ BẢNG DỮ LIỆU & HUY HIỆU ĐỘI HÌNH
+   ========================================================================== */
 .table-responsive {
-    overflow-x: auto;
+    max-height: 520px;
+    overflow-y: auto;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+}
+
+th, td {
+    padding: 14px;
     text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 13px;
 }
 
 th {
-    padding: 14px;
-    font-size: 13px;
-    color: #888;
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(15, 23, 42, 0.85);
+    color: #94a3b8;
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
-td {
-    padding: 16px 14px;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
-.char-name {
-    font-weight: 600;
+.badge-team {
+    background: rgba(129, 212, 250, 0.15);
+    border: 1px solid #81d4fa;
+    color: #81d4fa;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.btn-action-del {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-action-del:hover {
+    background: #ef4444;
     color: #fff;
 }
 
-/* Màu sắc tên môn phái */
-.class-cuulinh { color: #d683ff; }
-.class-thiety { color: #ffb84d; }
-.class-toaimong { color: #4da6ff; }
-
-/* Nhãn Đội hình (Badges) */
-.badge {
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-}
-.team-mid { background-color: rgba(255, 70, 85, 0.15); color: #ff4655; border: 1px solid rgba(255, 70, 85, 0.3); }
-.team-def { background-color: rgba(77, 166, 255, 0.15); color: #4da6ff; border: 1px solid rgba(77, 166, 255, 0.3); }
-.team-tru { background-color: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
-
-.delete-btn {
-    background: none;
-    border: 1px solid #ff4655;
-    color: #ff4655;
-    padding: 4px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.2s;
+/* ==========================================================================
+   6. GIAO DIỆN LƯỚI PHÂN CHIA ĐỘI HÌNH DẠNG SƠ ĐỒ EXCEL
+   ========================================================================== */
+.excel-control-panel {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
-.delete-btn:hover {
-    background-color: #ff4655;
-    color: white;
+.excel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    overflow-x: auto;
+}
+
+.excel-column-block {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(129, 212, 250, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.excel-column-header {
+    background: linear-gradient(90deg, rgba(129, 212, 250, 0.3), rgba(244, 143, 177, 0.3));
+    padding: 12px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.excel-sub-header-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 4px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #94a3b8;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.excel-row-data {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.ex-in {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+    padding: 8px 6px;
+    font-size: 12px;
+    outline: none;
+    text-align: center;
+}
+
+.ex-in:focus {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ex-in:last-child {
+    border-right: none;
+}
+
+/* ==========================================================================
+   7. BẢNG XẾP HẠNG 3 ĐOÀN (DAME NGƯỜI, DAME TRỤ, MẠNG)
+   ========================================================================== */
+.bxh-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 25px;
+}
+
+.bxh-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.doan-block-wrapper {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+.doan-title-head {
+    background: rgba(244, 143, 177, 0.15);
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #f48fb1;
+    border-bottom: 1px solid rgba(244, 143, 177, 0.1);
+}
+
+/* Định dạng mã màu văn bản bổ trợ */
+.text-pink { color: #f48fb1; }
+.text-blue { color: #81d4fa; }
+.text-gold { color: #ffe082; font-weight: bold; }
+
+code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
 }
