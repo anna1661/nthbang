@@ -5,6 +5,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ĐẠI SẢNH QUẢN LÝ BANG HỘI</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- HỆ THỐNG LAYOUT ĐỘNG GRID/FLEX TRUNG TÂM --- */
+        .bxh-layout-archive {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .bxh-layout-archive .form-bxh {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Khung chứa Lịch Sử + Bảng Vàng nằm ngang căn giữa */
+        .bxh-main-content {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        /* Thiết lập tỉ lệ */
+        .archive-sidebar {
+            flex: 0 0 320px;
+            width: 320px;
+        }
+        .display-bxh-archive {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .archive-list-wrapper {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        .archive-item-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 4px;
+            padding-right: 5px;
+        }
+        .archive-item-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #fff;
+            text-align: left;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .archive-item-btn.active {
+            background: rgba(244, 63, 94, 0.2);
+            color: #f43f5e;
+            font-weight: bold;
+        }
+        .arch-date {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        .btn-delete-match {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* --- ĐỊNH DẠNG BẢNG VINH DANH NHIỀU CỘT CHUẨN --- */
+        .doan-block-wrapper {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .doan-title-head {
+            font-size: 15px;
+            font-weight: bold;
+            color: #fda4af;
+            margin-bottom: 12px;
+            border-left: 3px solid #f43f5e;
+            padding-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .bxh-list-rows {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        /* Mặc định cấu trúc Grid khi hiển thị quyền ADMIN (Có cột hành động) */
+        .bxh-header-row, .bxh-data-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 120px 130px 120px 120px 80px 100px;
+            align-items: center;
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 13.5px;
+            min-width: 850px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            box-sizing: border-box;
+        }
+
+        /* ĐÃ SỬA LỖI: Tự động cấu trúc lại cột khi ĐĂNG XUẤT (Giao diện Khách) để không bị lệch trái và mất cột */
+        body.is-guest .bxh-header-row, 
+        body.is-guest .bxh-data-row {
+            grid-template-columns: 80px 1fr 120px 130px 130px 130px 90px; /* Bỏ cột cuối, dồn đều tỷ lệ rộng rãi */
+            min-width: 780px;
+        }
+
+        .bxh-header-row {
+            font-weight: bold;
+            background: rgba(255,255,255,0.03);
+            color: #f43f5e;
+            border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .bxh-col-rank { font-weight: bold; color: #fff; text-align: center; }
+        .bxh-col-name { text-align: center; font-weight: bold; }
+        .bxh-col-id { font-family: monospace; color: #cbd5e1; }
+        .bxh-col-phai { color: #60a5fa; }
+        
+        .text-gold { color: #fbbf24 !important; font-weight: bold; }
+        .text-cyan { color: #22d3ee !important; }
+        .text-red { color: #f87171 !important; font-weight: bold; }
+
+        /* Đảm bảo bảng danh sách thành viên html table luôn căn giữa rộng rãi */
+        .table-responsive table {
+            width: 100%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        .table-responsive th, .table-responsive td {
+            padding: 12px 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
@@ -41,9 +188,14 @@
         </aside>
 
         <main class="main-content">
+            
             <div id="main-thanhvien" class="main-tab-pane active">
-                <div class="sub-tab-bar"><button class="sub-btn active">📑 Toàn Bộ Thành Viên Bang Hội</button></div>
-                <div class="sub-tab-content active">
+                <div class="sub-tab-bar">
+                    <button class="sub-btn active" onclick="switchSubTab('tv', 'ds')">📑 Toàn Bộ Thành Viên Bang Hội</button>
+                    <button class="sub-btn" onclick="switchSubTab('tv', 'phai')">🗂️ Xếp Thành Viên Theo Phái</button>
+                </div>
+                
+                <div id="tv-ds" class="sub-tab-content active">
                     <div class="grid-layout">
                         <div class="glass-card admin-only">
                             <h3>QUẢN LÝ THÀNH VIÊN BANG</h3>
@@ -56,16 +208,33 @@
                                 <button class="btn btn-primary" onclick="registerGuildMember()">Thêm vào sổ bang</button>
                             </div>
                         </div>
-                        <div class="glass-card">
+                        <div class="glass-card" style="width: 100%; margin: 0 auto;">
                             <h3>SỔ PHẢ HỆ THÀNH VIÊN THÁNH VỰC</h3>
                             <div class="table-responsive">
                                 <table>
-                                    <thead><tr><th>Tên</th><th>ID</th><th>Phái</th><th>Chức vụ</th><th>Ghi chú</th><th class="admin-only">Hành động</th></tr></thead>
+                                    <thead>
+                                        <tr>
+                                            <th>Tên nhân vật</th>
+                                            <th>ID Game</th>
+                                            <th>Môn Phái</th>
+                                            <th>Chức vụ bang hội</th>
+                                            <th>Ghi chú</th>
+                                            <th class="admin-only">Hành động</th>
+                                        </tr>
+                                    </thead>
                                     <tbody id="tbl-tv-ds"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div id="tv-phai" class="sub-tab-content">
+                    <div class="excel-control-panel admin-only">
+                        <button class="btn btn-secondary" onclick="autoBuildTeam('phai')">⚡ Tự động nạp</button>
+                        <button class="btn btn-primary" onclick="saveTeamExcel('phai')">💾 Lưu sơ đồ phái</button>
+                    </div>
+                    <div class="excel-grid" id="excel-phai"></div>
                 </div>
             </div>
             
@@ -75,10 +244,11 @@
                     <button class="sub-btn" onclick="switchSubTab('bc', 'dh')">2. Xếp Đội Hình (Excel)</button>
                     <button class="sub-btn" onclick="switchSubTab('bc', 'bxh')">3. Bảng Xếp Hạng Dame</button>
                 </div>
+                
                 <div id="bc-ds" class="sub-tab-content active">
                     <div class="grid-layout">
                         <div class="glass-card admin-only">
-                            <h3>ĐĂNG KÝ QUÂN SỐ</h3>
+                            <h3>ĐĂNG KÝ QUÂN SỐ BANG CHIẾN</h3>
                             <div class="form-group">
                                 <label>TÊN NHÂN VẬT</label><input type="text" id="bc-name" class="form-control">
                                 <label>ID GAME</label><input type="text" id="bc-id" class="form-control">
@@ -88,17 +258,27 @@
                                 <button class="btn btn-primary" onclick="register('bangchien')">Ghi danh sơ đồ</button>
                             </div>
                         </div>
-                        <div class="glass-card">
+                        <div class="glass-card" style="width: 100%; margin: 0 auto;">
                             <h3>DANH SÁCH THÀNH VIÊN THAM GIA BANG CHIẾN</h3>
                             <div class="table-responsive">
                                 <table>
-                                    <thead><tr><th>Tên</th><th>ID</th><th>Phái</th><th>Đội hình</th><th>Ghi chú</th><th class="admin-only">Hành động</th></tr></thead>
+                                    <thead>
+                                        <tr>
+                                            <th>Tên nhân vật</th>
+                                            <th>ID Game</th>
+                                            <th>Môn Phái</th>
+                                            <th>Đội hình dự kiến</th>
+                                            <th>Ghi chú</th>
+                                            <th class="admin-only">Hành động</th>
+                                        </tr>
+                                    </thead>
                                     <tbody id="tbl-bc-ds"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
+                
                 <div id="bc-dh" class="sub-tab-content">
                     <div class="excel-control-panel admin-only">
                         <button class="btn btn-secondary" onclick="autoBuildTeam('bangchien')">⚡ Tự động nạp</button>
@@ -106,27 +286,33 @@
                     </div>
                     <div class="excel-grid" id="excel-bc"></div>
                 </div>
+                
                 <div id="bc-bxh" class="sub-tab-content">
                     <div class="bxh-layout-archive">
                         <div class="glass-card form-bxh admin-only">
-                            <h3>LƯU THÀNH TÍCH TRẬN MỚI</h3>
-                            <input type="text" id="bc-bxh-matchname" class="form-control" placeholder="Tên trận...">
-                            <label>Tên nhân vật</label><input type="text" id="bc-bxh-name" class="form-control">
-                            <label>ID Game</label><input type="text" id="bc-bxh-id" class="form-control">
-                            <label>Môn Phái</label><select id="bc-bxh-phai" class="form-control"></select>
-                            <label>Đoàn</label><select id="bc-bxh-doan" class="form-control"><option value="Đoàn 1">Đoàn 1</option><option value="Đoàn 2">Đoàn 2</option><option value="Đoàn 3">Đoàn 3</option></select>
-                            <label>Dame Người</label><input type="number" id="bc-bxh-dn" class="form-control" value="0">
-                            <label>Dame Trụ</label><input type="number" id="bc-bxh-dt" class="form-control" value="0">
-                            <label>Mạng</label><input type="number" id="bc-bxh-m" class="form-control" value="0">
-                            <button class="btn btn-primary" onclick="saveBXH('bangchien')">Cập nhật</button>
+                            <h3>LƯU THÀNH TÍCH TRẬN MỚI (BANG CHIẾN)</h3>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                                <div class="form-group"><label>Tên Trận đấu/Giải đấu:</label><input type="text" id="bc-match-name" placeholder="Ví dụ: Công Thành Chiến..." class="form-control"></div>
+                                <div class="form-group"><label>Tên nhân vật:</label><input type="text" id="bc-bxh-name" placeholder="Nhập tên..." class="form-control"></div>
+                                <div class="form-group"><label>ID Game:</label><input type="text" id="bc-idGame" placeholder="Nhập ID..." class="form-control"></div>
+                                <div class="form-group"><label>Môn Phái:</label><select id="bc-bxh-phai" class="form-control"></select></div>
+                                <div class="form-group"><label>Đoàn:</label><select id="bc-doan" class="form-control"><option value="Đoàn 1">Đoàn 1</option><option value="Đoàn 2">Đoàn 2</option><option value="Đoàn 3">Đoàn 3</option></select></div>
+                                <div class="form-group"><label>Dame Người:</label><input type="number" id="bc-dameNguoi" value="0" class="form-control"></div>
+                                <div class="form-group"><label>Dame Trụ:</label><input type="number" id="bc-dameTru" value="0" class="form-control"></div>
+                                <div class="form-group"><label>Mạng:</label><input type="number" id="bc-mang" value="0" class="form-control"></div>
+                            </div>
+                            <button class="btn btn-primary" style="margin-top:10px;" onclick="saveBXH('bangchien')">Cập nhật thành tích</button>
                         </div>
-                        <div class="glass-card archive-sidebar">
-                            <h3>LỊCH SỬ TRẬN ĐẤU</h3>
-                            <div id="bc-archive-list" class="archive-list-wrapper"></div>
-                        </div>
-                        <div class="glass-card display-bxh-archive">
-                            <h3 id="bc-archive-title">BẢNG VINH DANH THÀNH TÍCH</h3>
-                            <div class="bxh-wrapper" id="bxh-container-bc"></div>
+
+                        <div class="bxh-main-content">
+                            <div class="glass-card archive-sidebar">
+                                <h3>📜 LỊCH SỬ TRẬN ĐẤU</h3>
+                                <div id="bc-archive-list" class="archive-list-wrapper"></div>
+                            </div>
+                            <div class="glass-card display-bxh-archive">
+                                <h3 id="bc-archive-title">🏆 BẢNG VÀNG GIẢI ĐẤU</h3>
+                                <div class="bxh-wrapper" id="bxh-container-bc"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -138,6 +324,7 @@
                     <button class="sub-btn" onclick="switchSubTab('sc', 'dh')">2. Xếp Đội Hình Scrim</button>
                     <button class="sub-btn" onclick="switchSubTab('sc', 'bxh')">3. BXH Dame Scrim</button>
                 </div>
+                
                 <div id="sc-ds" class="sub-tab-content active">
                     <div class="grid-layout">
                         <div class="glass-card admin-only">
@@ -151,17 +338,27 @@
                                 <button class="btn btn-primary" onclick="register('scrim')">Ghi danh đấu tập</button>
                             </div>
                         </div>
-                        <div class="glass-card">
+                        <div class="glass-card" style="width: 100%; margin: 0 auto;">
                             <h3>DANH SÁCH THÀNH VIÊN THAM GIA SCRIM</h3>
                             <div class="table-responsive">
                                 <table>
-                                    <thead><tr><th>Tên</th><th>ID</th><th>Phái</th><th>Đội hình</th><th>Ghi chú</th><th class="admin-only">Hành động</th></tr></thead>
+                                    <thead>
+                                        <tr>
+                                            <th>Tên nhân vật</th>
+                                            <th>ID Game</th>
+                                            <th>Môn Phái</th>
+                                            <th>Đội hình dự kiến</th>
+                                            <th>Ghi chú</th>
+                                            <th class="admin-only">Hành động</th>
+                                        </tr>
+                                    </thead>
                                     <tbody id="tbl-sc-ds"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
+                
                 <div id="sc-dh" class="sub-tab-content">
                     <div class="excel-control-panel admin-only">
                         <button class="btn btn-secondary" onclick="autoBuildTeam('scrim')">⚡ Tự động nạp</button>
@@ -169,60 +366,50 @@
                     </div>
                     <div class="excel-grid" id="excel-sc"></div>
                 </div>
+                
                 <div id="sc-bxh" class="sub-tab-content">
                     <div class="bxh-layout-archive">
                         <div class="glass-card form-bxh admin-only">
-                            <h3>NHẬP THÀNH TÍCH MỚI</h3>
-                            <input type="text" id="sc-bxh-matchname" class="form-control" placeholder="Tên trận scrim...">
-                            <label>Tên nhân vật</label><input type="text" id="sc-bxh-name" class="form-control">
-                            <label>ID Game</label><input type="text" id="sc-bxh-id" class="form-control">
-                            <label>Môn Phái</label><select id="sc-bxh-phai" class="form-control"></select>
-                            <label>Đoàn</label><select id="sc-bxh-doan" class="form-control"><option value="Đoàn 1">Đoàn 1</option><option value="Đoàn 2">Đoàn 2</option><option value="Đoàn 3">Đoàn 3</option></select>
-                            <label>Dame Người</label><input type="number" id="sc-bxh-dn" class="form-control" value="0">
-                            <label>Dame Trụ</label><input type="number" id="sc-bxh-dt" class="form-control" value="0">
-                            <label>Mạng</label><input type="number" id="sc-bxh-m" class="form-control" value="0">
-                            <button class="btn btn-primary" onclick="saveBXH('scrim')">Cập nhật</button>
+                            <h3>NHẬP THÀNH TÍCH MỚI (SCRIM)</h3>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                                <div class="form-group"><label>Tên Trận đấu/Giải đấu:</label><input type="text" id="sc-match-name" class="form-control" placeholder="Tên trận scrim..."></div>
+                                <div class="form-group"><label>Tên nhân vật:</label><input type="text" id="sc-bxh-name" class="form-control"></div>
+                                <div class="form-group"><label>ID Game:</label><input type="text" id="sc-idGame" class="form-control"></div>
+                                <div class="form-group"><label>Môn Phái:</label><select id="sc-bxh-phai" class="form-control"></select></div>
+                                <div class="form-group"><label>Đoàn:</label><select id="sc-doan" class="form-control"><option value="Đoàn 1">Đoàn 1</option><option value="Đoàn 2">Đoàn 2</option><option value="Đoàn 3">Đoàn 3</option></select></div>
+                                <div class="form-group"><label>Dame Người:</label><input type="number" id="sc-dameNguoi" class="form-control" value="0"></div>
+                                <div class="form-group"><label>Dame Trụ:</label><input type="number" id="sc-dameTru" class="form-control" value="0"></div>
+                                <div class="form-group"><label>Mạng:</label><input type="number" id="sc-mang" class="form-control" value="0"></div>
+                            </div>
+                            <button class="btn btn-primary" style="margin-top: 10px;" onclick="saveBXH('scrim')">Cập nhật thành tích</button>
                         </div>
-                        <div class="glass-card archive-sidebar">
-                            <h3>LỊCH SỬ ĐẤU TẬP</h3>
-                            <div id="sc-archive-list" class="archive-list-wrapper"></div>
-                        </div>
-                        <div class="glass-card display-bxh-archive">
-                            <h3 id="sc-archive-title">BẢNG VINH DANH THÀNH TÍCH</h3>
-                            <div class="bxh-wrapper" id="bxh-container-sc"></div>
+                        
+                        <div class="bxh-main-content">
+                            <div class="glass-card archive-sidebar">
+                                <h3>📜 LỊCH SỬ ĐẤU TẬP</h3>
+                                <div id="sc-archive-list" class="archive-list-wrapper"></div>
+                            </div>
+                            <div class="glass-card display-bxh-archive">
+                                <h3 id="sc-archive-title">🏆 BẢNG VINH DANH THÀNH TÍCH</h3>
+                                <div class="bxh-wrapper" id="bxh-container-sc"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </main>
     </div>
 
-    <style>
-        .auth-box-panel { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin: 10px; }
-        .auth-input { height: 28px !important; font-size: 11px !important; padding: 2px 5px !important; margin-bottom: 4px; background: rgba(0,0,0,0.3) !important; color:#fff !important; }
-        .bxh-layout-archive { display: grid; grid-template-columns: 320px 260px 1fr; gap: 20px; align-items: start; }
-        .archive-list-wrapper { display: flex; flex-direction: column; gap: 10px; max-height: 550px; overflow-y: auto; }
-        .archive-item-container { position: relative; display: flex; align-items: center; width: 100%; }
-        .archive-item-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding: 12px; padding-right: 40px; border-radius: 6px; text-align: left; cursor: pointer; transition: all 0.2s ease; width: 100%; }
-        .archive-item-btn:hover { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; }
-        .archive-item-btn.active { background: #f43f5e; color: #fff; border-color: #f43f5e; font-weight: bold; }
-        .archive-item-btn .arch-date { display: block; font-size: 11px; color: #94a3b8; margin-top: 4px; }
-        .btn-delete-match { position: absolute; right: 10px; background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 4px 8px; transition: background 0.2s; }
-        .btn-delete-match:hover { background: rgba(239, 68, 68, 0.2); border-radius: 4px; }
-        /* Style điều khiển ẩn hiện quyền Admin */
-        body.is-guest .admin-only { display: none !important; }
-    </style>
-
     <script>
-        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Toái Mộng", "Huyết Hà", "Thần Tương", "Long Ngâm", "Tố Vấn", "Thần Y"];
+        const MON_PHAI = ["Cửu Linh", "Thiết Y", "Tố Vấn", "Toái Mộng", "Huyết Hà", "Long Ngâm", "Thần Tướng"];
         const TEAMS = ["Team Mid", "Team Trụ", "Team Def", "Team Vật tư"];
-        const CHUC_VU = ["Đại Đương Gia", "Nhị Đương Gia", "Tam Đương Gia", "Sát Đường Chủ", "Tứ Đương Gia", "Ngũ Đương Gia", "Sát Đường Chủ", "Socola Đường Chủ", "Socola Phó Đường Chủ", "Socola Bang Chúng", "Matcha Đường Chủ", "Vani Đường Chủ","Quân Sư", "Yến Sư", "Mưu Khách", "Nhã Công", "Bang Chúng", "Học Việc"];
+        const CHUC_VU = ["Đại Đương Gia", "Nhị Đương Gia", "Tam Đương Gia", "Sát Đường Chủ", "Tứ Đương Gia", "Ngũ Đương Gia", "Socola Đường Chủ", "Socola Phó Đường Chủ", "Socola Bang Chúng", "Matcha Đường Chủ", "Vani Đường Chủ", "Quân Sư", "Yến Sư", "Mưu Khách", "Nhã Công", "Bang Chúng", "Học Việc"];
         
         let CLIENT_DATA = {};
         let CURRENT_SELECTED_MATCH_BC = "";
         let CURRENT_SELECTED_MATCH_SC = "";
         
-        // Quản lý biến đăng nhập LocalStorage
         let USER_ROLE = localStorage.getItem('guild_role') || 'guest';
         let USER_NAME = localStorage.getItem('guild_user') || '';
 
@@ -239,19 +426,17 @@
                 document.getElementById('auth-logged-out').style.display = 'block';
                 document.getElementById('auth-logged-in').style.display = 'none';
             }
+            checkAdminAuth();
         }
 
-        // Tạo cấu trúc gửi header chứa quyền Admin lên Server xác thực
         function getAuthHeaders() {
-            return {
-                'Content-Type': 'application/json',
-                'user-role': USER_ROLE
-            };
+            return { 'Content-Type': 'application/json', 'user-role': USER_ROLE };
         }
 
         async function handleLogin() {
             const taiKhoan = document.getElementById('auth-user').value;
             const matKhau = document.getElementById('auth-pass').value;
+            if(!taiKhoan || !matKhau) return alert("Vui lòng điền tài khoản mật khẩu!");
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -264,7 +449,7 @@
                 localStorage.setItem('guild_role', USER_ROLE);
                 localStorage.setItem('guild_user', USER_NAME);
                 applyRoleUI();
-                loadAllData();
+                await loadAllData();
             } else {
                 alert(data.error);
             }
@@ -280,7 +465,7 @@
             });
             const data = await res.json();
             if(data.success) {
-                alert("Đăng ký thành công! Tài khoản khách của em có thể xem được dữ liệu rồi đó.");
+                alert("Đăng ký thành công! Bạn có thể xem dữ liệu.");
             } else {
                 alert(data.error);
             }
@@ -290,7 +475,7 @@
             localStorage.clear();
             USER_ROLE = 'guest'; USER_NAME = '';
             applyRoleUI();
-            loadAllData();
+            window.location.reload();
         }
 
         function initDropdowns() {
@@ -314,11 +499,22 @@
         }
 
         function switchSubTab(prefix, tab) {
-            const parent = document.getElementById('main-' + (prefix === 'bc' ? 'bangchien' : 'scrim'));
+            let parentId = 'main-thanhvien';
+            if(prefix === 'bc') parentId = 'main-bangchien';
+            if(prefix === 'sc') parentId = 'main-scrim';
+            
+            const parent = document.getElementById(parentId);
+            if(!parent) return;
             parent.querySelectorAll('.sub-tab-content').forEach(el => el.classList.remove('active'));
             parent.querySelectorAll('.sub-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(prefix + '-' + tab).classList.add('active');
+            
+            const targetContent = document.getElementById(prefix + '-' + tab);
+            if(targetContent) targetContent.classList.add('active');
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
+
+            if(prefix === 'tv' && tab === 'phai') {
+                renderExcelGrid('phai', CLIENT_DATA.doiHinhPhai || {});
+            }
         }
 
         async function loadAllData() {
@@ -332,6 +528,7 @@
                 
                 renderExcelGrid('bangchien', CLIENT_DATA.doiHinhBangChien || {});
                 renderExcelGrid('scrim', CLIENT_DATA.doiHinhScrim || {});
+                renderExcelGrid('phai', CLIENT_DATA.doiHinhPhai || {});
                 
                 buildArchiveSidebar('bangchien', CLIENT_DATA.bxhBangChien || []);
                 buildArchiveSidebar('scrim', CLIENT_DATA.bxhScrim || []);
@@ -347,12 +544,13 @@
                 <tr>
                     <td class="text-pink"><strong>${p.ten}</strong></td>
                     <td><code>${p.idGame}</code></td>
-                    <td class="text-blue">${p.monPhai}</td>
-                    <td><span class="badge-team">${p.khuVuc}</span></td>
+                    <td class="text-blue">${p.monPhai || 'Chưa rõ'}</td>
+                    <td><span class="badge-team">${p.khuVuc || 'Chưa xếp'}</span></td>
                     <td style="color: #94a3b8;">${p.ghiChu || ''}</td>
                     <td class="admin-only"><button class="btn-action-del" onclick="deletePlayer('${type}', '${p.ten}')">Xóa</button></td>
                 </tr>
             `).join('');
+            checkAdminAuth();
         }
 
         function renderGuildMemberTable(list) {
@@ -362,12 +560,79 @@
                 <tr>
                     <td class="text-pink"><strong>${p.ten}</strong></td>
                     <td><code>${p.idGame}</code></td>
-                    <td class="text-blue">${p.monPhai}</td>
-                    <td><span class="badge-team" style="background:#0284c7;">${p.chucVu}</span></td>
+                    <td class="text-blue">${p.monPhai || 'Chưa rõ'}</td>
+                    <td><span class="badge-team" style="background:#0284c7;">${p.chucVu || 'Bang Chúng'}</span></td>
                     <td style="color: #94a3b8;">${p.ghiChu || ''}</td>
                     <td class="admin-only"><button class="btn-action-del" onclick="deleteGuildMember('${p.ten}')">Xóa</button></td>
                 </tr>
             `).join('');
+            checkAdminAuth();
+        }
+
+        async function registerGuildMember() {
+            const ten = document.getElementById('tv-name').value.trim();
+            const idGame = document.getElementById('tv-id').value.trim();
+            const monPhai = document.getElementById('tv-phai').value;
+            const chucVu = document.getElementById('tv-chucvu').value;
+            const ghiChu = document.getElementById('tv-note').value.trim();
+
+            if(!ten || !idGame) return alert("Vui lòng điền đầy đủ tên và ID!");
+
+            const res = await fetch('/api/add-member', { 
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ ten, idGame, monPhai, chucVu, ghiChu })
+            });
+            if(res.status === 403) return alert("Từ chối: Bạn không phải Admin!");
+            
+            document.getElementById('tv-name').value = "";
+            document.getElementById('tv-id').value = "";
+            document.getElementById('tv-note').value = "";
+            await loadAllData();
+        }
+
+        async function register(type) {
+            const pre = type === 'bangchien' ? 'bc' : 'sc';
+            const ten = document.getElementById(`${pre}-name`).value.trim();
+            const idGame = document.getElementById(`${pre}-id`).value.trim();
+            const monPhai = document.getElementById(`${pre}-phai`).value;
+            const khuVuc = document.getElementById(`${pre}-team`).value;
+            const ghiChu = document.getElementById(`${pre}-note`).value.trim();
+
+            if(!ten || !idGame) return alert("Điền đầy đủ thông tin!");
+
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ loai: type, ten, idGame, monPhai, khuVuc, ghiChu })
+            });
+            if(res.status === 403) return alert("Lỗi: Chỉ Admin mới được thêm dữ liệu!");
+            document.getElementById(`${pre}-name`).value = ""; 
+            document.getElementById(`${pre}-id`).value = "";
+            document.getElementById(`${pre}-note`).value = "";
+            await loadAllData();
+        }
+
+        async function deletePlayer(type, ten) {
+            if(!confirm(`Xóa nhân vật [${ten}]?`)) return;
+            const res = await fetch('/api/delete-player', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ loai: type, ten })
+            });
+            if(res.status === 403) return alert("Lỗi: Em không có quyền Admin!");
+            await loadAllData();
+        }
+
+        async function deleteGuildMember(ten) {
+            if(!confirm(`Xóa thành viên [${ten}]?`)) return;
+            const res = await fetch('/api/delete-member', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ ten })
+            });
+            if(res.status === 403) return alert("Lỗi: Em không có quyền Admin!");
+            await loadAllData();
         }
 
         function buildArchiveSidebar(type, bxhList) {
@@ -427,182 +692,215 @@
 
         function displayMatchBXH(type, matchName, fullList) {
             const pre = type === 'bangchien' ? 'bc' : 'sc';
-            document.getElementById(`${pre}-archive-title`).innerText = matchName ? `🏆 BẢNG VÀNG GIẢI ĐẤU: ${matchName.toUpperCase()}` : "BẢNG VINH DANH THÀNH TÍCH";
+            const titleEl = document.getElementById(`${pre}-archive-title`);
+            if(titleEl) titleEl.innerText = matchName ? `🏆 BẢNG VÀNG GIẢI ĐẤU: ${matchName.toUpperCase()}` : "BẢNG VINH DANH THÀNH TÍCH";
             renderBXHCore(type, fullList.filter(p => p.matchName === matchName));
         }
 
-        async function register(type) {
-            const pre = type === 'bangchien' ? 'bc' : 'sc';
-            const ten = document.getElementById(`${pre}-name`).value.trim();
-            const idGame = document.getElementById(`${pre}-id`).value.trim();
-            const monPhai = document.getElementById(`${pre}-phai`).value;
-            const khuVuc = document.getElementById(`${pre}-team`).value;
-            const ghiChu = document.getElementById(`${pre}-note`).value.trim();
-
-            if(!ten || !idGame) return alert("Điền đầy đủ thông tin!");
-
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ loai: type, ten, idGame, monPhai, khuVuc, ghiChu })
-            });
-            if(res.status === 403) return alert("Lỗi: Chỉ Admin mới được thêm dữ liệu!");
-            document.getElementById(`${pre}-name`).value = ""; document.getElementById(`${pre}-id`).value = "";
-            await loadAllData();
-        }
-
-        async function registerGuildMember() {
-            const ten = document.getElementById('tv-name').value.trim();
-            const idGame = document.getElementById('tv-id').value.trim();
-            const monPhai = document.getElementById('tv-phai').value;
-            const chucVu = document.getElementById('tv-chucvu').value;
-            const ghiChu = document.getElementById('tv-note').value.trim();
-
-            const res = await fetch('/api/register-member', {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ ten, idGame, monPhai, chucVu, ghiChu })
-            });
-            if(res.status === 403) return alert("Lỗi: Chỉ Admin mới được thêm thành viên!");
-            document.getElementById('tv-name').value = ""; document.getElementById('tv-id').value = "";
-            await loadAllData();
-        }
-
-        async function deletePlayer(type, ten) {
-            if(!confirm(`Xóa nhân vật [${ten}]?`)) return;
-            const res = await fetch('/api/delete-player', {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ loai: type, ten })
-            });
-            if(res.status === 403) return alert("Lỗi: Em không có quyền Admin!");
-            await loadAllData();
-        }
-
-        async function deleteGuildMember(ten) {
-            if(!confirm(`Xóa thành viên [${ten}]?`)) return;
-            const res = await fetch('/api/delete-member', {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ ten })
-            });
-            if(res.status === 403) return alert("Lỗi: Em không có quyền Admin!");
-            await loadAllData();
-        }
-
         function renderExcelGrid(type, doiHinh) {
-            const container = document.getElementById(`excel-${type === 'bangchien' ? 'bc' : 'sc'}`);
+            let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
+            const container = document.getElementById(containerId);
             if(!container) return;
-            container.innerHTML = TEAMS.map(teamName => {
-                const members = doiHinh[teamName] || [];
+
+            const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
+            const maxRows = (type === 'phai') ? 25 : 30;
+
+            container.innerHTML = columnsList.map(colName => {
+                const members = doiHinh[colName] || [];
                 let rowsHtml = "";
-                for(let i = 0; i < 30; i++) {
+                for(let i = 0; i < maxRows; i++) {
                     const m = members[i] || { ten: "", idGame: "", monPhai: "" };
                     const readonlyAttr = USER_ROLE !== 'admin' ? 'readonly' : '';
+
                     rowsHtml += `
                         <div class="excel-row-data">
-                            <input type="text" value="${m.ten}" data-team="${teamName}" data-field="ten" class="ex-in p-name" ${readonlyAttr}>
-                            <input type="text" value="${m.idGame}" data-team="${teamName}" data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
-                            <input type="text" value="${m.monPhai}" data-team="${teamName}" data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
+                            <input type="text" value="${m.ten || ''}" data-team="${colName}" data-tab="${type}" data-field="ten" class="ex-in p-name" ${readonlyAttr}>
+                            <input type="text" value="${m.idGame || ''}" data-team="${colName}" data-tab="${type}" data-field="idGame" class="ex-in p-id" ${readonlyAttr}>
+                            <input type="text" value="${m.monPhai || ''}" data-team="${colName}" data-tab="${type}" data-field="monPhai" class="ex-in p-phai" ${readonlyAttr}>
                         </div>
                     `;
                 }
                 return `<div class="excel-column-block">
-                    <div class="excel-column-header">${teamName}</div>
+                    <div class="excel-column-header">${colName.toUpperCase()}</div>
                     ${rowsHtml}
                 </div>`;
             }).join('');
         }
 
         async function saveTeamExcel(type) {
-            let tempDoiHinh = { "Team Mid": [], "Team Trụ": [], "Team Def": [], "Team Vật tư": [] };
-            TEAMS.forEach(teamName => {
-                const container = document.getElementById(`excel-${type === 'bangchien' ? 'bc' : 'sc'}`);
-                const rows = container.querySelectorAll('.excel-row-data');
-                rows.forEach(row => {
-                    const nameInp = row.querySelector(`[data-team="${teamName}"][data-field="ten"]`);
+            let tempDoiHinh = {};
+            const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
+            let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
+            const container = document.getElementById(containerId);
+
+            columnsList.forEach(colName => {
+                tempDoiHinh[colName] = [];
+                const nameInputs = container.querySelectorAll(`input[data-team="${colName}"][data-tab="${type}"][data-field="ten"]`);
+                
+                nameInputs.forEach((nameInp) => {
                     if(nameInp && nameInp.value.trim()) {
-                        const idInp = row.querySelector(`[data-team="${teamName}"][data-field="idGame"]`);
-                        const phaiInp = row.querySelector(`[data-team="${teamName}"][data-field="monPhai"]`);
-                        tempDoiHinh[teamName].push({ ten: nameInp.value.trim(), idGame: idInp.value.trim(), monPhai: phaiInp.value.trim() });
+                        const parentRow = nameInp.closest('.excel-row-data');
+                        const idInp = parentRow.querySelector(`input[data-team="${colName}"][data-tab="${type}"][data-field="idGame"]`);
+                        const phaiInp = parentRow.querySelector(`input[data-team="${colName}"][data-tab="${type}"][data-field="monPhai"]`);
+                        
+                        tempDoiHinh[colName].push({ 
+                            ten: nameInp.value.trim(), 
+                            idGame: idInp ? idInp.value.trim() : "", 
+                            monPhai: phaiInp ? phaiInp.value.trim() : "" 
+                        });
                     }
                 });
             });
+
             const res = await fetch('/api/save-team-excel', {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({ loai: type, doiHinh: tempDoiHinh })
             });
             if(res.status === 403) return alert("Thất bại: Chỉ Admin mới được lưu!");
-            alert("Đã lưu thành công!");
+            alert("Đã lưu sơ đồ thành công!");
             await loadAllData();
+        }
+
+        async function autoBuildTeam(type) {
+            if(type === 'phai') {
+                let tempDoiHinh = {};
+                MON_PHAI.forEach(p => tempDoiHinh[p] = []);
+                (CLIENT_DATA.dsThanhVienBang || []).forEach(m => {
+                    if(tempDoiHinh[m.monPhai]) {
+                        tempDoiHinh[m.monPhai].push({ ten: m.ten, idGame: m.idGame, monPhai: m.monPhai });
+                    }
+                });
+                renderExcelGrid('phai', tempDoiHinh);
+            } else {
+                const mappingType = type === 'bangchien' ? 'dsThamGiaBangChien' : 'dsThamGiaScrim';
+                let tempDoiHinh = {};
+                TEAMS.forEach(t => tempDoiHinh[t] = []);
+                (CLIENT_DATA[mappingType] || []).forEach(m => {
+                    if(tempDoiHinh[m.khuVuc]) {
+                        tempDoiHinh[m.khuVuc].push({ ten: m.ten, idGame: m.idGame, monPhai: m.monPhai });
+                    }
+                });
+                renderExcelGrid(type, tempDoiHinh);
+            }
         }
 
         async function saveBXH(type) {
-            const pre = type === 'bangchien' ? 'bc' : 'sc';
-            const matchName = document.getElementById(`${pre}-bxh-matchname`).value.trim();
-            const ten = document.getElementById(`${pre}-bxh-name`).value.trim();
-            const idGame = document.getElementById(`${pre}-bxh-id`).value.trim();
-            const monPhai = document.getElementById(`${pre}-bxh-phai`).value;
-            const doan = document.getElementById(`${pre}-bxh-doan`).value;
-            const dameNguoi = Number(document.getElementById(`${pre}-bxh-dn`).value) || 0;
-            const dameTru = Number(document.getElementById(`${pre}-bxh-dt`).value) || 0;
-            const mang = Number(document.getElementById(`${pre}-bxh-m`).value) || 0;
+            const prefix = type === 'bangchien' ? 'bc' : 'sc';
+            const matchName = document.getElementById(`${prefix}-match-name`).value.trim();
+            const ten = document.getElementById(`${prefix}-bxh-name`).value.trim();
+            const idGame = document.getElementById(`${prefix}-idGame`).value.trim();
+            const monPhai = document.getElementById(`${prefix}-bxh-phai`).value;
+            const doan = document.getElementById(`${prefix}-doan`).value;
+            const dameNguoi = parseInt(document.getElementById(`${prefix}-dameNguoi`).value) || 0;
+            const dameTru = parseInt(document.getElementById(`${prefix}-dameTru`).value) || 0;
+            const mang = parseInt(document.getElementById(`${prefix}-mang`).value) || 0;
 
-            if(!matchName || !ten) return alert("Vui lòng điền đủ Tên trận và Tên người chơi!");
+            if (!matchName || !ten || !idGame) {
+                return alert("Vui lòng nhập đầy đủ Tên Trận, Tên Nhân Vật và ID Game!");
+            }
 
-            const res = await fetch('/api/save-bxh', {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ loai: type, record: { matchName, ten, idGame, monPhai, doan, dameNguoi, dameTru, mang } })
-            });
-            if(res.status === 403) return alert("Lỗi: Quyền Admin mới được lưu!");
-            document.getElementById(`${pre}-bxh-name`).value = "";
-            if(type === 'bangchien') CURRENT_SELECTED_MATCH_BC = matchName; else CURRENT_SELECTED_MATCH_SC = matchName;
-            await loadAllData();
+            const payload = { type, matchName, ten, idGame, monPhai, doan, dameNguoi, dameTru, mang };
+
+            try {
+                const res = await fetch('/api/save-bxh', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                    body: JSON.stringify(payload)
+                });
+                if (res.status === 403) return alert("Lỗi: Bạn không phải Admin!");
+                if (res.ok) {
+                    alert("Cập nhật thành tích thành công!");
+                    await loadAllData();
+                }
+            } catch (err) {
+                console.error(err);
+            }
         }
 
         async function deleteBXH(type, ten) {
-            if(!confirm(`Xóa dòng thành tích này?`)) return;
-            const res = await fetch('/api/delete-bxh', {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ loai: type, ten })
-            });
-            if(res.status === 403) return alert("Lỗi: Bạn không phải Admin!");
-            await loadAllData();
+            if (!confirm('Xóa dòng thành tích này?')) return;
+            try {
+                const res = await fetch('/api/delete-bxh', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                    body: JSON.stringify({ loai: type, ten })
+                });
+                if (res.status === 403) return alert("Lỗi: Bạn không phải Admin!");
+                await loadAllData();
+            } catch (err) {
+                console.error(err);
+            }
         }
 
         function renderBXHCore(type, bxhList) {
             const container = document.getElementById(`bxh-container-${type === 'bangchien' ? 'bc' : 'sc'}`);
-            if(!container) return;
-            const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
+            if (!container) return;
             
-            container.innerHTML = doans.map(doanName => {
-                const players = bxhList.filter(p => p.doan === doanName).sort((a,b) => b.dameNguoi - a.dameNguoi);
-                let rows = players.map((p, idx) => `
-                    <tr>
-                        <td><strong>TOP ${idx+1}</strong></td>
-                        <td class="text-pink"><strong>${p.ten}</strong></td>
-                        <td><code>${p.idGame}</code></td>
-                        <td>${p.monPhai}</td>
-                        <td class="text-gold">${p.dameNguoi.toLocaleString()}</td>
-                        <td>${p.dameTru.toLocaleString()}</td>
-                        <td>${p.mang}</td>
-                        <td class="admin-only"><button class="btn-action-del" style="padding:2px 5px; font-size:11px;" onclick="deleteBXH('${type}', '${p.ten}')">Xóa</button></td>
-                    </tr>
-                `).join('');
-                return `<div class="doan-block-wrapper">
-                    <div class="doan-title-head">${doanName}</div>
-                    <table><tbody>${rows || '<tr><td colspan="8">Trống</td></tr>'}</tbody></table>
-                </div>`;
-            }).join('');
+            const doans = ["Đoàn 1", "Đoàn 2", "Đoàn 3"];
+            let finalHtml = "";
+
+            for (let i = 0; i < doans.length; i++) {
+                let doanName = doans[i];
+                let players = bxhList.filter(p => p.doan === doanName).sort((a, b) => b.dameNguoi - a.dameNguoi);
+                
+                let headerRow = `
+                    <div class="bxh-header-row">
+                        <div>Hạng</div><div>Tên</div><div>ID Game</div><div>Môn Phái</div><div>Dame Người</div><div>Dame Trụ</div><div>Mạng</div><div class="admin-only">Hành động</div>
+                    </div>`;
+
+                let rowsHtml = "";
+                for (let j = 0; j < players.length; j++) {
+                    let p = players[j];
+                    let rankIdx = j + 1;
+                    rowsHtml += `
+                        <div class="bxh-data-row">
+                            <div class="bxh-col-rank">TOP ${rankIdx}</div>
+                            <div class="bxh-col-name text-pink"><strong>${p.ten}</strong></div>
+                            <div class="bxh-col-id"><code>${p.idGame}</code></div>
+                            <div class="bxh-col-phai">${p.monPhai || 'Chưa rõ'}</div>
+                            <div class="text-gold">${p.dameNguoi.toLocaleString()}</div>
+                            <div class="text-cyan">${p.dameTru.toLocaleString()}</div>
+                            <div class="text-red">${p.mang}</div>
+                            <div class="admin-only">
+                                <button class="btn-action-del" style="padding:2px 6px; font-size:11px;" onclick="deleteBXH('${type}', '${p.ten}')">Xóa</button>
+                            </div>
+                        </div>`;
+                }
+
+                let bodyContent = players.length > 0 ? headerRow + rowsHtml : '<div style="color:#64748b; padding:15px; text-align:center; font-style:italic;">Chưa có dữ liệu thành tích trận này</div>';
+
+                finalHtml += `
+                    <div class="doan-block-wrapper">
+                        <div class="doan-title-head">${doanName.toUpperCase()}</div>
+                        <div class="bxh-list-rows">
+                            ${bodyContent}
+                        </div>
+                    </div>`;
+            }
+            container.innerHTML = finalHtml;
+            checkAdminAuth();
         }
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            applyRoleUI();
+        function checkAdminAuth() {
+            const adminElements = document.querySelectorAll('.admin-only');
+            adminElements.forEach(el => {
+                if (USER_ROLE === 'admin') {
+                    if (el.classList.contains('form-bxh')) {
+                        el.style.display = 'block';
+                    } else {
+                        el.style.display = ''; 
+                    }
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
             initDropdowns();
-            await loadAllData();
+            applyRoleUI();
+            loadAllData();
         });
     </script>
 </body>
