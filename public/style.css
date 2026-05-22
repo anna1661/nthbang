@@ -108,6 +108,8 @@ body {
     flex: 1;
     padding: 25px;
     overflow-y: auto;
+    min-width: 0;
+    width: 100%;
 }
 
 .main-tab-pane { display: none; }
@@ -153,6 +155,8 @@ body {
     border-radius: 16px;
     padding: 22px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    overflow-x: auto;
 }
 
 .glass-card h3 {
@@ -392,4 +396,21 @@ code {
     padding: 2px 6px;
     border-radius: 4px;
     font-family: monospace;
+}
+table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 320px) minmax(0, 1fr);
+    gap: 25px;
+}
+
+.main-content,
+.sub-tab-content,
+.glass-card {
+    min-width: 0;
 }
