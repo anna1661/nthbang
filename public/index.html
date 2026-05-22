@@ -6,6 +6,25 @@
     <title>ĐẠI SẢNH QUẢN LÝ BANG HỘI</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* --- KHẮC PHỤC LỖI Ô NHẬP THÔNG TIN BỊ TRẮNG --- */
+        .form-bxh input.form-control, 
+        .form-bxh input[type="text"], 
+        .form-bxh input[type="number"],
+        .form-bxh select.form-control,
+        .form-group input, 
+        .form-group select {
+            background-color: #1e293b !important; /* Nền xám tối rõ ràng */
+            color: #ffffff !important;            /* Chữ trắng 100% */
+            border: 1px solid #f43f5e !important; /* Viền hồng đẹp mắt */
+            padding: 8px 12px;
+            border-radius: 6px;
+            outline: none;
+        }
+        .form-bxh input::placeholder,
+        .form-group input::placeholder {
+            color: #94a3b8 !important; /* Màu chữ gợi ý rõ ràng */
+        }
+
         /* --- HỆ THỐNG LAYOUT ĐỘNG GRID/FLEX TRUNG TÂM --- */
         .bxh-layout-archive {
             display: flex;
@@ -352,7 +371,6 @@
     </div>
 
     <script>
-        // THỨ TỰ MÔN PHÁI CHUẨN ĐÉT THEO GIAO DIỆN CỦA EM
         const MON_PHAI = ["Cửu Linh", "Thiết Y", "Tố Vấn", "Toái Mộng", "Huyết Hà", "Long Ngâm", "Thần Tướng"];
         const TEAMS = ["Team Mid", "Team Trụ", "Team Def", "Team Vật tư"];
         const CHUC_VU = ["Đại Đương Gia", "Nhị Đương Gia", "Tam Đương Gia", "Sát Đường Chủ", "Tứ Đương Gia", "Ngũ Đương Gia", "Socola Đường Chủ", "Socola Phó Đường Chủ", "Socola Bang Chúng", "Matcha Đường Chủ", "Vani Đường Chủ", "Quân Sư", "Yến Sư", "Mưu Khách", "Nhã Công", "Bang Chúng", "Học Việc"];
@@ -648,14 +666,14 @@
             renderBXHCore(type, fullList.filter(p => p.matchName === matchName));
         }
 
-        /* --- SỬA TRIỆT ĐỂ: GIỮ data-team VÀ BỔ SUNG THUỘC TÍNH data-tab ĐỂ PHÂN LOẠI --- */
+        /* --- VẼ LƯỚI ĐỘC LẬP: COI data-team LÀ CỘT PHÁI NẾU TYPE LÀ PHAI --- */
         function renderExcelGrid(type, doiHinh) {
             let containerId = `excel-${type === 'bangchien' ? 'bc' : (type === 'scrim' ? 'sc' : 'phai')}`;
             const container = document.getElementById(containerId);
             if(!container) return;
 
             const columnsList = (type === 'phai') ? MON_PHAI : TEAMS;
-            const maxRows = (type === 'phai') ? 25 : 30;
+            const maxRows = (type === 'phai') ? 25 : 30; // Đúng yêu cầu 25 dòng cho Tab Phái
 
             container.innerHTML = columnsList.map(colName => {
                 const members = doiHinh[colName] || [];
@@ -687,7 +705,6 @@
 
             columnsList.forEach(colName => {
                 tempDoiHinh[colName] = [];
-                // CHỈ lọc quét các input có đúng data-tab tương ứng, giữ nguyên data-team
                 const nameInputs = container.querySelectorAll(`input[data-team="${colName}"][data-tab="${type}"][data-field="ten"]`);
                 
                 nameInputs.forEach((nameInp) => {
