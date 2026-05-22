@@ -1,416 +1,267 @@
-/* ==========================================================================
-   1. CẤU HÌNH HỆ THỐNG & NỀN PASTEL CỔ TRANG (GLASSMORPHISM)
-   ========================================================================== */
+/* Giao diện nền tối phong cách kiếm hiệp cổ trang */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    /* Đổi nền sử dụng đúng ảnh phong cảnh núi non kiếm hiệp hoa đào của em */
-    background: #0d111a url('https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1920') no-repeat center center fixed;
-    background-size: cover;
-    color: #f8fafc;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    height: 100vh;
-    overflow: hidden;
+    background-color: #0b0f19;
+    color: #e2e8f0;
+    overflow-x: hidden;
 }
 
-/* KHUNG CONTAINER CHẤT LIỆU KÍNH LAI ĐIỆN TỬ XANH HỒNG */
+/* Khung cấu trúc chia màn hình thành Sidebar và Main Nội dung */
 .app-container {
     display: flex;
-    height: 100vh;
-    background: linear-gradient(135deg, rgba(244, 143, 177, 0.15), rgba(129, 212, 250, 0.15));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    min-height: 100vh;
 }
 
-/* ==========================================================================
-   2. THANH SIDEBAR TRÁI (MENU ĐIỀU HƯỚNG CHÍNH)
-   ========================================================================== */
+/* MENU SIDEBAR BÊN TRÁI */
 .sidebar {
     width: 260px;
-    background: rgba(15, 23, 42, 0.85);
-    border-right: 1px solid rgba(244, 143, 177, 0.3);
+    background-color: #0f1422;
+    border-right: 1px solid #1e293b;
     display: flex;
     flex-direction: column;
-    padding: 25px 15px;
+    padding: 20px;
 }
 
-.guild-brand {
+.guild-logo {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
-.brand-logo {
+.guild-logo img {
+    border-radius: 50%;
+    border: 2px solid #f59e0b;
     width: 70px;
     height: 70px;
-    background: linear-gradient(135deg, #f48fb1, #81d4fa);
-    border-radius: 50%;
-    margin: 0 auto;
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 70px;
-    color: #fff;
-    box-shadow: 0 0 20px rgba(244, 143, 177, 0.4);
 }
 
-.brand-name {
-    margin-top: 15px;
+.guild-name {
+    color: #f59e0b;
+    font-size: 20px;
     font-weight: bold;
-    letter-spacing: 2px;
-    background: linear-gradient(to right, #f48fb1, #81d4fa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin-top: 10px;
+    letter-spacing: 1px;
 }
 
 .menu-nav {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
 .menu-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #cbd5e1;
-    padding: 14px 20px;
+    background: transparent;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    padding: 12px 15px;
     text-align: left;
-    border-radius: 12px;
-    font-weight: bold;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
 }
 
 .menu-btn:hover, .menu-btn.active {
-    background: linear-gradient(135deg, rgba(244, 143, 177, 0.4), rgba(129, 212, 250, 0.4));
+    background: linear-gradient(90deg, #f59e0b, #b45309);
     color: #fff;
-    border-color: #f48fb1;
-    box-shadow: 0 8px 24px rgba(244, 143, 177, 0.25);
-    transform: translateY(-2px);
+    border-color: #f59e0b;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
 .sidebar-footer {
     margin-top: auto;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding-top: 15px;
+    border-top: 1px solid #1e293b;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    font-weight: bold;
 }
 
-/* ==========================================================================
-   3. KHU VỰC HIỂN THỊ NỘI DUNG CHÍNH & TAB CON
-   ========================================================================== */
+/* KHU VỰC CHÍNH BÊN PHẢI */
 .main-content {
     flex: 1;
-    padding: 25px;
-    overflow-y: auto;
-    min-width: 0;
-    width: 100%;
+    padding: 30px;
+    background: radial-gradient(circle at top right, #111827, #0b0f19);
 }
 
-.main-tab-pane { display: none; }
-.main-tab-pane.active { display: block; }
-.sub-tab-content { display: none; }
-.sub-tab-content.active { display: block; }
-
-/* THANH CHUYỂN SUB-TAB (1. Danh sách, 2. Xếp Đội Hình, 3. Bảng Xếp Hạng) */
-.sub-tab-bar {
-    display: flex;
-    gap: 10px;
-    background: rgba(15, 23, 42, 0.6);
-    padding: 6px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    width: fit-content;
+.tab-section {
+    display: none;
 }
 
-.sub-btn {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    padding: 10px 20px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: 0.2s;
+.tab-section.active {
+    display: block;
 }
 
-.sub-btn.active, .sub-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-/* ==========================================================================
-   4. PHONG CÁCH CÁC THÀNH PHẦN KHỐI (GLASSMORPHISM CARD)
-   ========================================================================== */
-.glass-card {
-    background: rgba(15, 23, 42, 0.55);
-    border: 1px solid rgba(244, 143, 177, 0.15);
-    border-radius: 16px;
-    padding: 22px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    overflow-x: auto;
-}
-
-.glass-card h3 {
-    font-size: 16px;
+/* Các khung hộp Panel chứa dữ liệu */
+.panel-box {
+    background-color: #151f32;
+    border: 1px solid #24344d;
+    border-radius: 10px;
+    padding: 20px;
     margin-bottom: 20px;
-    border-left: 4px solid #f48fb1;
-    padding-left: 10px;
-    color: #f1f5f9;
-    letter-spacing: 0.5px;
 }
 
-.grid-layout {
+.panel-box h3 {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #24344d;
+    padding-bottom: 8px;
+    font-size: 16px;
+    color: #f8fafc;
+}
+
+/* Định dạng chữ màu đặc biệt */
+.gold-text { color: #f59e0b; }
+.cyan-text { color: #38bdf8; }
+.text-center { text-align: center; }
+
+.welcome-banner {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 5px solid #f59e0b;
+    margin-bottom: 25px;
+}
+
+.welcome-banner h1 {
+    color: #f59e0b;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Cấu trúc chia đôi cho Tab Bang Chiến */
+.bangchien-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
-    gap: 25px;
+    gap: 20px;
 }
 
-/* Ô NHẬP LIỆU FORM */
+/* THIẾT KẾ CÁC Ô NHẬP LIỆU FORM */
 .form-control {
     width: 100%;
-    background: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #0b0f19;
+    border: 1px solid #334155;
     color: #fff;
-    padding: 11px 14px;
-    border-radius: 8px;
-    margin-top: 6px;
-    margin-bottom: 18px;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+    margin-bottom: 15px;
     outline: none;
-    transition: 0.2s;
 }
 
 .form-control:focus {
-    border-color: #81d4fa;
-    box-shadow: 0 0 10px rgba(129, 212, 250, 0.2);
+    border-color: #f59e0b;
 }
 
 label {
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: bold;
     color: #94a3b8;
     letter-spacing: 0.5px;
 }
 
-/* NÚT BẤM PASTEL TỔNG HỢP */
+/* THIẾT KẾ NÚT BẤM */
 .btn {
     border: none;
     padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: bold;
+    border-radius: 6px;
     cursor: pointer;
-    transition: 0.2s;
+    font-weight: bold;
+    transition: background 0.2s;
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #f48fb1, #d81b60);
-    color: #fff;
+.btn-gold {
+    background-color: #f59e0b;
+    color: #0f172a;
 }
 
-.btn-primary:hover {
-    box-shadow: 0 0 15px rgba(244, 143, 177, 0.5);
+.btn-gold:hover {
+    background-color: #d97706;
 }
 
-.btn-secondary {
-    background: linear-gradient(135deg, #81d4fa, #0288d1);
-    color: #fff;
+.counter-box {
+    background: #1e293b;
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid #f59e0b;
+    font-weight: bold;
+    font-size: 14px;
 }
 
-/* ==========================================================================
-   5. THIẾT KẾ BẢNG DỮ LIỆU & HUY HIỆU ĐỘI HÌNH
-   ========================================================================== */
-.table-responsive {
-    max-height: 520px;
-    overflow-y: auto;
-}
-
+/* THIẾT KẾ BẢNG HIỂN THỊ */
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 10px;
 }
 
 th, td {
-    padding: 14px;
+    padding: 12px;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    font-size: 13px;
+    border-bottom: 1px solid #24344d;
+    font-size: 14px;
 }
 
 th {
-    background-color: rgba(15, 23, 42, 0.85);
     color: #94a3b8;
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    background-color: #0f1422;
 }
 
 tr:hover {
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: #1e293b;
 }
 
-.badge-team {
-    background: rgba(129, 212, 250, 0.15);
-    border: 1px solid #81d4fa;
-    color: #81d4fa;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-}
-
-.btn-action-del {
-    background: rgba(239, 68, 68, 0.2);
-    border: 1px solid #ef4444;
-    color: #f87171;
+/* Huy hiệu Đội hình và Nút thao tác trên dòng dữ liệu */
+.team-badge {
+    background-color: #1e3a8a;
+    color: #93c5fd;
     padding: 4px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.btn-action-del:hover {
-    background: #ef4444;
-    color: #fff;
-}
-
-/* ==========================================================================
-   6. GIAO DIỆN LƯỚI PHÂN CHIA ĐỘI HÌNH DẠNG SƠ ĐỒ EXCEL
-   ========================================================================== */
-.excel-control-panel {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.excel-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    overflow-x: auto;
-}
-
-.excel-column-block {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(129, 212, 250, 0.2);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.excel-column-header {
-    background: linear-gradient(90deg, rgba(129, 212, 250, 0.3), rgba(244, 143, 177, 0.3));
-    padding: 12px;
-    text-align: center;
-    font-weight: 800;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-.excel-sub-header-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 6px 4px;
-    font-size: 11px;
-    font-weight: bold;
-    color: #94a3b8;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.excel-row-data {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.ex-in {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    color: #fff;
-    padding: 8px 6px;
-    font-size: 12px;
-    outline: none;
-    text-align: center;
-}
-
-.ex-in:focus {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.ex-in:last-child {
-    border-right: none;
-}
-
-/* ==========================================================================
-   7. BẢNG XẾP HẠNG 3 ĐOÀN (DAME NGƯỜI, DAME TRỤ, MẠNG)
-   ========================================================================== */
-.bxh-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 25px;
-}
-
-.bxh-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    max-height: 600px;
-    overflow-y: auto;
-    padding-right: 10px;
-}
-
-.doan-block-wrapper {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-}
-
-.doan-title-head {
-    background: rgba(244, 143, 177, 0.15);
-    padding: 10px 15px;
-    font-weight: bold;
-    font-size: 14px;
-    color: #f48fb1;
-    border-bottom: 1px solid rgba(244, 143, 177, 0.1);
-}
-
-/* Định dạng mã màu văn bản bổ trợ */
-.text-pink { color: #f48fb1; }
-.text-blue { color: #81d4fa; }
-.text-gold { color: #ffe082; font-weight: bold; }
-
-code {
-    background: rgba(255, 255, 255, 0.08);
-    padding: 2px 6px;
     border-radius: 4px;
-    font-family: monospace;
-}
-table {
-    width: 100%;
-    min-width: 700px;
-    border-collapse: collapse;
+    font-size: 12px;
+    border: 1px solid #3b82f6;
 }
 
-.grid-layout {
+.btn-action {
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 2px;
+}
+
+.btn-edit { background-color: #059669; color: #fff; }
+.btn-delete { background-color: #dc2626; color: #fff; }
+
+/* Grid danh sách BXH & Shop Quà */
+.bxh-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #24344d;
+}
+
+.shop-grid {
     display: grid;
-    grid-template-columns: minmax(320px, 320px) minmax(0, 1fr);
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
 }
 
-.main-content,
-.sub-tab-content,
-.glass-card {
-    min-width: 0;
+.shop-card {
+    background-color: #151f32;
+    border: 1px solid #24344d;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
 }
